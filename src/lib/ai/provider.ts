@@ -23,7 +23,7 @@ async function groq(prompt: string): Promise<unknown> {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
+      model: process.env.GROQ_MODEL || "qwen/qwen3.8-27b",
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.2,
