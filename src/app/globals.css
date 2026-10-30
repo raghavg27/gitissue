@@ -47,9 +47,13 @@ body {
 
 /* Highlighter stroke for screen names verified against the code. */
 .marker {
-  background: linear-gradient(transparent 35%, var(--marker) 35%, var(--marker) 90%, transparent 90%);
+  background: linear-gradient(transparent 8%, var(--marker) 8%, var(--marker) 94%, transparent 94%);
   color: #12263a;
-  padding: 0 0.15em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  padding: 0.05em 0.3em;
+  border-radius: 0.15em 0.4em 0.2em 0.35em;
+  box-decoration-break: clone;
 }
 
 :focus-visible {
