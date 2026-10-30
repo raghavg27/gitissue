@@ -7,6 +7,7 @@ import { readRecentRepos } from "@/lib/recent-repos";
 import { parseRepoUrl } from "@/lib/repo-url";
 
 const noSubscribe = () => () => {};
+const appHost = process.env.NEXT_PUBLIC_APP_URL && new URL(process.env.NEXT_PUBLIC_APP_URL).host;
 
 export function RepoPicker() {
   const router = useRouter();
@@ -44,6 +45,11 @@ export function RepoPicker() {
         />
         {error && <p className="text-sm text-rec">{error}</p>}
         <button className="w-full rounded-xl bg-ink px-5 py-4 text-lg font-bold text-paper">Open repo</button>
+        {appHost && (
+          <p className="text-sm text-muted">
+            Shortcut: on any GitHub repo page, replace <code>github.com</code> with <code>{appHost}</code> in the address bar.
+          </p>
+        )}
       </form>
       {recent.length > 0 && (
         <div className="space-y-2">
