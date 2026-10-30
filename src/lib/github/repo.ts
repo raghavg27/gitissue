@@ -6,7 +6,7 @@ export type RepoAccess = {
   fullName: string;
   private: boolean;
   defaultBranch: string;
-  canPush: boolean;
+  canTriage: boolean;
 };
 
 // Throws (404) when the repo doesn't exist or the viewer can't see it (FR-4).
@@ -18,7 +18,7 @@ export async function getRepoAccess(octokit: Octokit, owner: string, repo: strin
     fullName: data.full_name,
     private: data.private,
     defaultBranch: data.default_branch,
-    canPush: data.permissions?.push === true,
+    canTriage: data.permissions?.triage === true || data.permissions?.push === true,
   };
 }
 
