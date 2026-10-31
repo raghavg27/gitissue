@@ -50,7 +50,7 @@ export function RepoPicker() {
         {appHost && (
           <p className="text-sm text-muted">
             Shortcut: on any GitHub repo page, replace <code className="text-ink">github.com</code> with{" "}
-            <code className="text-ink">{appHost}</code> in the address bar.
+            <code className="whitespace-nowrap text-ink">{appHost}</code> in the address bar.
           </p>
         )}
       </form>
