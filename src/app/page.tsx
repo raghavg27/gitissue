@@ -27,7 +27,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       signedIn={!!viewer}
       badge="For testers on any GitHub repo"
       title="Say the bug out loud"
-      sub="GitIssue turns what you say into an issue that follows the repo's template and uses the app's real screen names. If the bug is already reported, your findings go on that issue."
+      sub="Turn 30 seconds of talking into a bug report developers can fix right away. GitIssue follows the repo's template, names the real screens and adds to an existing issue when one is already open."
     >
       {error === "auth" && (
         <p role="alert" className="mb-4 rounded-2xl bg-warn-bg px-5 py-3 text-warn-ink">GitHub sign-in did not finish. Try again.</p>
