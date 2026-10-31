@@ -10,11 +10,11 @@ import { createClient } from "@/lib/supabase/server";
 export const metadata: Metadata = pageMetadata({
   title: "Devices",
   description: "The phones and browsers you test on, saved for your reports.",
-  path: "/settings",
+  path: "/devices",
   noindex: true,
 });
 
-export default async function Settings() {
+export default async function Devices() {
   if (!(await getViewer())) redirect("/");
   const supabase = await createClient();
   const { data } = await supabase.from("device_profiles").select("*").order("created_at");

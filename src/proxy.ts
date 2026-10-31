@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PRIVATE_PAGES = ["/reports", "/settings"];
+const PRIVATE_PAGES = ["/reports", "/devices"];
 
 // Refreshes the Supabase session cookie on each request.
 export async function proxy(request: NextRequest) {

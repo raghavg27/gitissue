@@ -29,7 +29,7 @@ export function AppHeader({ signedIn, reveal = false }: { signedIn: boolean; rev
         <>
           <nav aria-label="Main" className="glass hidden h-12 items-center gap-7 rounded-full px-7 text-[0.95rem] whitespace-nowrap text-muted sm:flex">
             <NavLink href="/reports" className={link}>My reports</NavLink>
-            <NavLink href="/settings" className={link}>Devices</NavLink>
+            <NavLink href="/devices" className={link}>Devices</NavLink>
             <SignOutButton className={link} />
           </nav>
           <div className="text-sm text-muted sm:hidden">
