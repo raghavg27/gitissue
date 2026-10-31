@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { fluidSimulation } from "@/lib/fluid";
 
 // Ink-in-water background. Live on the home and sign-in screens; calm (slow, dim, no pointer) on working screens.
 export function Backdrop({ live = false }: { live?: boolean }) {
@@ -14,12 +13,17 @@ export function Backdrop({ live = false }: { live?: boolean }) {
     holder.current!.prepend(canvas);
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let destroy: (() => void) | undefined;
-    try {
-      destroy = fluidSimulation(canvas, { calm: !live, still });
-    } catch {
-      // No WebGL: the base colour behind the canvas is enough.
-    }
+    let gone = false;
+    // The WebGL code loads after the page is interactive, in its own chunk.
+    import("@/lib/fluid")
+      .then(({ fluidSimulation }) => {
+        if (!gone) destroy = fluidSimulation(canvas, { calm: !live, still });
+      })
+      .catch(() => {
+        // No WebGL: the base colour behind the canvas is enough.
+      });
     return () => {
+      gone = true;
       destroy?.();
       canvas.remove();
     };
