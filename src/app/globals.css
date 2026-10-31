@@ -5,21 +5,21 @@
   color-scheme: dark;
   /* Height of the phone bottom navigation; 0 when the page has none. */
   --nav-h: 0px;
-  --paper: #04050c;
-  --card: rgba(255, 255, 255, 0.08);
-  --ink: #eef0f6;
-  --muted: #b9becf;
-  --line: rgba(255, 255, 255, 0.16);
+  --paper: #0c0705;
+  --card: rgba(255, 236, 220, 0.08);
+  --ink: #f7efe8;
+  --muted: #cdbfb3;
+  --line: rgba(255, 226, 204, 0.16);
   --pill: #ffffff;
   --pill-ink: #2f2f33;
-  --marker: #9cecff;
+  --marker: #ffc46b;
   --rec: #ff6b7d;
   --ok: #5fe3b8;
   --warn-bg: rgba(255, 200, 90, 0.12);
   --warn-ink: #ffd98a;
-  --scrim: rgba(4, 5, 12, 0.46);
-  --scrim-strong: rgba(4, 5, 12, 0.68);
-  --scrim-soft: rgba(4, 5, 12, 0.12);
+  --scrim: rgba(12, 7, 5, 0.46);
+  --scrim-strong: rgba(12, 7, 5, 0.68);
+  --scrim-soft: rgba(12, 7, 5, 0.12);
   --ease-entrance: cubic-bezier(0.2, 0, 0, 1);
   --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
 }
@@ -48,7 +48,7 @@ body {
 }
 
 ::selection {
-  background: rgba(140, 120, 255, 0.45);
+  background: rgba(255, 130, 60, 0.45);
 }
 
 ::placeholder {
@@ -128,7 +128,7 @@ body {
 /* Highlighter stroke for screen names verified against the code. */
 .marker {
   background: linear-gradient(transparent 8%, var(--marker) 8%, var(--marker) 94%, transparent 94%);
-  color: #04050c;
+  color: #0c0705;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
   padding: 0.05em 0.3em;
@@ -139,7 +139,7 @@ body {
 /* Native arrow sits too close to a pill's rounded end, so draw our own. */
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b9becf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cdbfb3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   background-size: 1rem;
