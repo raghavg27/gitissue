@@ -8,7 +8,7 @@ export default function Loading() {
     <>
       <Backdrop />
       <AppHeader signedIn />
-      <main className="mx-auto w-full max-w-xl px-5 pt-6">
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-xl px-5 pt-6">
         <SkeletonSection label="Loading the report form" className="space-y-5">
           <div className="flex items-center justify-between gap-3">
             <SkeletonBlock className="h-8 w-2/3" />

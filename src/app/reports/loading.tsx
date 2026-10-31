@@ -7,7 +7,7 @@ export default function Loading() {
     <>
       <Backdrop />
       <AppHeader signedIn />
-      <main className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
         <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">My reports</h1>
         <SkeletonRows label="Loading reports" />
       </main>

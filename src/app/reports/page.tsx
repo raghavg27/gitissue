@@ -18,7 +18,7 @@ export default async function Reports() {
     <>
       <Backdrop />
       <AppHeader signedIn />
-      <main className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
         <div className="space-y-2">
           <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">My reports</h1>
           {!!reports?.length && <p className="text-muted">{plural(reports.length, "report")} from this account</p>}

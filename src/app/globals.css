@@ -170,6 +170,10 @@ body {
     outline: 2px solid var(--ink);
     outline-offset: 2px;
   }
+  /* The skip link target gets focus from script, not from the keyboard, so it needs no ring. */
+  main:focus {
+    outline: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

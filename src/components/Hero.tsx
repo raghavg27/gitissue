@@ -37,7 +37,7 @@ export function Hero({
     <div className="flex min-h-svh flex-col">
       <Backdrop live />
       <AppHeader signedIn={signedIn} reveal />
-      <main className="flex flex-1 flex-col items-center justify-center px-5 py-10 text-center sm:px-10">
+      <main id="main" tabIndex={-1} className="flex flex-1 flex-col items-center justify-center px-5 py-10 text-center sm:px-10">
         <div className="flex w-full max-w-[22rem] flex-col items-center sm:max-w-[40rem] lg:max-w-[52rem]">
           <p
             className="glass reveal inline-flex max-w-full items-center rounded-full px-3.5 py-1.5 text-[0.72rem] text-muted [overflow-wrap:anywhere] sm:text-[0.8rem]"

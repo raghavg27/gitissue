@@ -36,7 +36,7 @@ export default async function RepoPage({ params }: PageProps<"/[owner]/[repo]/[[
     <>
       <Backdrop />
       <AppHeader signedIn />
-      <main className="mx-auto w-full max-w-xl px-5 pt-6">
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-xl px-5 pt-6">
         <ReportFlow repo={access} devices={devices ?? []} />
       </main>
     </>
