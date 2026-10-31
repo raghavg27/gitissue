@@ -78,7 +78,7 @@ function BottomBar({ children, shortcut = false }: { children: React.ReactNode; 
 const SHORTCUT = "Meta+Enter Control+Enter";
 
 const primary = "pill h-14 flex-1 px-6 text-lg";
-const secondary = "glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-14 px-6";
+const secondary = "glass h-14 shrink-0 whitespace-nowrap rounded-full px-6 font-medium transition-colors hover:border-white/40 disabled:opacity-50";
 
 export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: DeviceProfile[] }) {
   const [stage, setStage] = useState<Stage>({ name: "describe" });
@@ -289,7 +289,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             {analysis.duplicates.map((m) => (
               <li key={m.number} className="glass space-y-3 rounded-3xl p-5">
                 <div className="space-y-1">
-                  <a href={m.url} target="_blank" rel="noreferrer" className="font-medium underline-offset-2 hover:underline">
+                  <a href={m.url} target="_blank" rel="noreferrer" className="line-clamp-2 font-medium underline-offset-2 hover:underline">
                     #{m.number} {m.title}
                   </a>
                   <p className="text-sm">
@@ -381,7 +381,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             <h2 className="text-xl font-medium">
               {stage.action === "reopen_comment" ? "Reopen" : "Comment on"} #{stage.match.number}
             </h2>
-            <p className="text-muted">{stage.match.title}</p>
+            <p className="line-clamp-2 text-muted">{stage.match.title}</p>
           </div>
           {stage.aiError && <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{stage.aiError}</p>}
           <label htmlFor="comment" className="sr-only">Comment</label>
@@ -417,7 +417,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
             {stage.action === "created" ? "Issue created" : stage.action === "reopened" ? "Issue reopened" : "Comment posted"}
           </h2>
-          <a href={stage.url} target="_blank" rel="noreferrer" className="block text-lg font-medium underline underline-offset-4">
+          <a href={stage.url} target="_blank" rel="noreferrer" className="block truncate text-lg font-medium underline underline-offset-4">
             {repo.fullName}#{stage.number}
           </a>
           {stage.reopenFailed && (
@@ -528,7 +528,7 @@ function DraftReview({
               key={l}
               onClick={() => onDraft({ ...draft, labels: draft.labels.filter((x) => x !== l) })}
               aria-label={`Remove label ${l}`}
-              className="glass rounded-full px-3 py-1 transition-colors hover:border-white/40"
+              className="glass max-w-full truncate rounded-full px-3 py-1 transition-colors hover:border-white/40"
             >
               {l} ×
             </button>

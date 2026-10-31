@@ -65,8 +65,8 @@ export function RepoPicker() {
           <h2 className="text-sm text-muted">Recent</h2>
           <ul className="flex flex-wrap justify-center gap-2">
             {recent.map((r) => (
-              <li key={r}>
-                <NavLink href={`/${r}`} className="glass block rounded-full px-4 py-2 text-sm transition-colors hover:border-white/40">
+              <li key={r} className="min-w-0 max-w-full">
+                <NavLink href={`/${r}`} className="glass block max-w-full truncate rounded-full px-4 py-2 text-sm transition-colors hover:border-white/40">
                   {r}
                 </NavLink>
               </li>

@@ -41,6 +41,8 @@
 body {
   background: var(--paper);
   color: var(--ink);
+  /* Long words and URLs wrap instead of pushing the page sideways. */
+  overflow-wrap: break-word;
 }
 
 ::selection {

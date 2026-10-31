@@ -29,14 +29,14 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
         <ul className="glass divide-y divide-line overflow-hidden rounded-3xl">
           {devices.map((d) => (
             <li key={d.id} className="flex items-center justify-between gap-3 px-5 py-4">
-              <div>
-                <p className="font-medium">{d.device_model}</p>
-                <p className="text-sm text-muted">
+              <div className="min-w-0">
+                <p className="truncate font-medium">{d.device_model}</p>
+                <p className="truncate text-sm text-muted">
                   {d.platform} {d.os_version}
                   {d.app_version && `, app ${d.app_version}`}
                 </p>
               </div>
-              <button onClick={() => remove(d)} className="text-sm text-rec">Delete</button>
+              <button onClick={() => remove(d)} className="shrink-0 text-sm text-rec">Delete</button>
             </li>
           ))}
         </ul>
