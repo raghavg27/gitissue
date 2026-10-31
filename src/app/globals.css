@@ -3,6 +3,8 @@
 
 :root {
   color-scheme: dark;
+  /* Height of the phone bottom navigation; 0 when the page has none. */
+  --nav-h: 0px;
   --paper: #04050c;
   --card: rgba(255, 255, 255, 0.08);
   --ink: #eef0f6;
@@ -142,6 +144,19 @@ select {
   background-position: right 1rem center;
   background-size: 1rem;
   padding-right: 2.75rem;
+}
+
+/* Phones with the bottom navigation: keep content and the action bar above it. */
+:root:has(#bottom-nav) {
+  --nav-h: calc(3.75rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 40rem) {
+  :root:has(#bottom-nav) {
+    --nav-h: 0px;
+  }
+}
+body {
+  padding-bottom: var(--nav-h);
 }
 
 /* A button whose server call is running: a second click does nothing. */

@@ -64,8 +64,9 @@ function CharCount({ id, value, max }: { id: string; value: string; max: number 
 
 function BottomBar({ children, shortcut = false }: { children: React.ReactNode; shortcut?: boolean }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/70 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-xl gap-2 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{children}</div>
+    <div className="fixed inset-x-0 bottom-[var(--nav-h)] z-20 border-t border-line bg-paper/70 backdrop-blur-xl">
+      {/* Above the phone navigation the safe area is already covered, so only the plain padding is needed. */}
+      <div className="mx-auto flex max-w-xl gap-2 px-4 pt-3 pb-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">{children}</div>
       {shortcut && (
         <p className="-mt-1 hidden pb-2 text-center text-xs text-muted sm:block">
           Press <kbd className="font-sans">⌘</kbd> or <kbd className="font-sans">Ctrl</kbd> + <kbd className="font-sans">Enter</kbd>

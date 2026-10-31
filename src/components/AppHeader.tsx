@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { BottomNav } from "./BottomNav";
 import { NavLink } from "./NavLink";
 import { SignOutButton } from "./SignOutButton";
 
-const link = "transition-colors duration-150 hover:text-ink";
+const link = "transition-colors duration-150 hover:text-ink aria-[current=page]:text-ink";
 
 export function AppHeader({ signedIn, reveal = false }: { signedIn: boolean; reveal?: boolean }) {
   return (
@@ -25,11 +26,17 @@ export function AppHeader({ signedIn, reveal = false }: { signedIn: boolean; rev
         GitIssue
       </Link>
       {signedIn && (
-        <nav className="glass flex h-10 items-center gap-4 rounded-full px-4 text-sm whitespace-nowrap text-muted sm:h-12 sm:gap-7 sm:px-7 sm:text-[0.95rem]">
-          <NavLink href="/reports" className={link}>My reports</NavLink>
-          <NavLink href="/settings" className={link}>Devices</NavLink>
-          <SignOutButton className={link} />
-        </nav>
+        <>
+          <nav aria-label="Main" className="glass hidden h-12 items-center gap-7 rounded-full px-7 text-[0.95rem] whitespace-nowrap text-muted sm:flex">
+            <NavLink href="/reports" className={link}>My reports</NavLink>
+            <NavLink href="/settings" className={link}>Devices</NavLink>
+            <SignOutButton className={link} />
+          </nav>
+          <div className="text-sm text-muted sm:hidden">
+            <SignOutButton className={link} />
+          </div>
+          <BottomNav />
+        </>
       )}
     </header>
   );

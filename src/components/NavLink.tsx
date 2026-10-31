@@ -1,6 +1,7 @@
 "use client";
 
 import Link, { useLinkStatus } from "next/link";
+import { usePathname } from "next/navigation";
 
 // A fixed-size dot that fades in while the next page is slow to load, so the layout does not move.
 function PendingHint() {
@@ -15,9 +16,12 @@ function PendingHint() {
   );
 }
 
-export function NavLink({ children, ...props }: React.ComponentProps<typeof Link>) {
+// Marks itself as the current page, so screen readers and the styles know where the user is.
+export function NavLink({ children, href, ...props }: React.ComponentProps<typeof Link>) {
+  const pathname = usePathname();
+  const current = typeof href === "string" && href.split("#")[0] === pathname;
   return (
-    <Link {...props}>
+    <Link href={href} aria-current={current ? "page" : undefined} {...props}>
       {children}
       <PendingHint />
     </Link>
