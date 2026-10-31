@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentPage } from "@/components/ContentPage";
 import { JsonLd } from "@/components/JsonLd";
-import { FAQ, FEATURES } from "@/content/features";
-import { breadcrumbLd, faqLd, pageMetadata, webPageLd } from "@/lib/seo";
+import { FEATURES } from "@/content/features";
+import { breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 
 const DESCRIPTION = "Each GitIssue feature and the reason for it: dictation, repo templates, real screen names, duplicate checks and more.";
@@ -18,7 +18,6 @@ export default function Features() {
         data={[
           webPageLd(site, "/features", "Features", DESCRIPTION),
           breadcrumbLd(site, [{ name: "Home", path: "/" }, { name: "Features", path: "/features" }]),
-          faqLd(FAQ),
         ]}
       />
       <ul className="space-y-3">
@@ -33,15 +32,10 @@ export default function Features() {
           </li>
         ))}
       </ul>
-      <section aria-labelledby="faq" className="space-y-3">
-        <h2 id="faq" className="text-2xl font-medium tracking-tight">Questions</h2>
-        {FAQ.map((item) => (
-          <details key={item.q} className="glass group rounded-3xl px-5 py-4">
-            <summary className="cursor-pointer font-medium">{item.q}</summary>
-            <p className="mt-2 text-muted">{item.a}</p>
-          </details>
-        ))}
-      </section>
+      <p className="text-muted">
+        Have a question? See the <Link href="/faq" className="text-ink underline underline-offset-4">FAQ</Link>, or read{" "}
+        <Link href="/how-it-works" className="text-ink underline underline-offset-4">how it works</Link>.
+      </p>
       <Link href="/#repo" className="pill h-12 px-6">Report a bug</Link>
     </ContentPage>
   );
