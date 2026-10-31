@@ -176,6 +176,18 @@ body {
   main:focus {
     outline: none;
   }
+  /* Tailwind resets buttons to the arrow; the hand shows that a control is clickable. */
+  button,
+  [role="button"],
+  select,
+  summary,
+  label[for],
+  input[type="file"] {
+    cursor: pointer;
+  }
+  :disabled {
+    cursor: not-allowed;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
