@@ -42,3 +42,7 @@ Import the repo into Vercel, add the same environment variables (set `NEXT_PUBLI
 ## Scripts
 
 `pnpm test` (Vitest), `pnpm lint`, `pnpm build`.
+
+## License
+
+The code is available under the [MIT License](LICENSE).
