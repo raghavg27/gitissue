@@ -8,3 +8,10 @@ export const PUBLIC_PAGES = [
 
 // Paths that crawlers must not visit: API routes, auth steps and signed-in pages.
 export const PRIVATE_PATHS = ["/api/", "/auth/", "/open", "/reports", "/devices", "/settings"];
+
+// The product pages in the top navigation and the footer.
+export const SITE_LINKS = [
+  { href: "/features", label: "Features" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/faq", label: "FAQ" },
+] as const;
