@@ -1,5 +1,6 @@
 import { AppHeader } from "./AppHeader";
 import { Backdrop } from "./Backdrop";
+import { SiteFooter } from "./SiteFooter";
 
 // Layout for public reading pages: features, privacy and terms.
 export function ContentPage({ title, intro, children }: { title: string; intro: string; children: React.ReactNode }) {
@@ -14,6 +15,9 @@ export function ContentPage({ title, intro, children }: { title: string; intro: 
         </div>
         {children}
       </main>
+      <footer className="px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <SiteFooter />
+      </footer>
     </>
   );
 }

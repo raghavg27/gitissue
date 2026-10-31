@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AppHeader } from "./AppHeader";
 import { Backdrop } from "./Backdrop";
 import { EmptyState } from "./EmptyState";
+import { SiteFooter } from "./SiteFooter";
 
 // Shared body for error and not-found pages: what happened, one way forward, and a link to a safe page.
 export function ProblemPage({ title, line, action }: { title: string; line: string; action?: React.ReactNode }) {
@@ -24,6 +25,9 @@ export function ProblemPage({ title, line, action }: { title: string; line: stri
           }
         />
       </main>
+      <footer className="px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <SiteFooter />
+      </footer>
     </>
   );
 }

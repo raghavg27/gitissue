@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { AppHeader } from "./AppHeader";
 import { Backdrop } from "./Backdrop";
+import { SiteFooter } from "./SiteFooter";
 
 type Vars = React.CSSProperties & Record<`--${string}`, string>;
 
@@ -60,7 +61,8 @@ export function Hero({
         className="reveal px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-center text-[0.72rem] text-muted sm:px-10 sm:pb-6 sm:text-[0.8rem]"
         style={{ "--delay": "1650ms" } as Vars}
       >
-        Nothing is posted to GitHub until you tap Post.
+        <p className="mb-3">Nothing is posted to GitHub until you tap Post.</p>
+        <SiteFooter />
       </footer>
     </div>
   );
