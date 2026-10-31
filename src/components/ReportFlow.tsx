@@ -9,6 +9,7 @@ import { rememberRepo } from "@/lib/recent-repos";
 import { LIMITS } from "@/lib/validation";
 import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
 import { ActionButton } from "./ActionButton";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { DevicePicker } from "./DevicePicker";
 import { MicButton } from "./MicButton";
 import { ScreenshotPicker, type Shot } from "./ScreenshotPicker";
@@ -93,6 +94,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   const [step, setStep] = useState(0);
 
   const [restored, setRestored] = useState(false);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   useEffect(() => rememberRepo(repo.fullName), [repo.fullName]);
 
@@ -224,6 +226,17 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
 
   return (
     <div className="space-y-5 pb-32">
+      <ConfirmDialog
+        open={confirmDiscard}
+        title="Discard this draft?"
+        body="Your description, screenshots and draft will be removed from this device. This cannot be undone."
+        confirmLabel="Discard draft"
+        onCancel={() => setConfirmDiscard(false)}
+        onConfirm={() => {
+          setConfirmDiscard(false);
+          reset();
+        }}
+      />
       <div className="flex items-baseline justify-between gap-3">
         <h1 className="min-w-0 truncate text-2xl font-medium tracking-tight sm:text-3xl">{repo.fullName}</h1>
         <span className="glass shrink-0 rounded-full px-3 py-1 text-xs text-muted">
@@ -359,7 +372,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
               {privateShotsWarning}
               {errorBox}
               <BottomBar shortcut>
-                <button onClick={reset} disabled={!!busy} className={secondary}>Discard</button>
+                <button onClick={() => setConfirmDiscard(true)} disabled={!!busy} className={secondary}>Discard</button>
                 <ActionButton
                   onClick={() => postIssue(stage.regressionOf)}
                   aria-keyshortcuts={SHORTCUT}
@@ -398,7 +411,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           {privateShotsWarning}
           {errorBox}
           <BottomBar shortcut>
-            <button onClick={reset} disabled={!!busy} className={secondary}>Discard</button>
+            <button onClick={() => setConfirmDiscard(true)} disabled={!!busy} className={secondary}>Discard</button>
             <ActionButton
               onClick={() => post({ action: stage.action, issueNumber: stage.match.number, body: stage.body })}
               aria-keyshortcuts={SHORTCUT}
