@@ -36,7 +36,12 @@ export function DevicePicker({
   if (adding) {
     return (
       <DeviceForm
+        devices={devices}
         onCancel={() => setAdding(false)}
+        onUseExisting={(d) => {
+          select(d.id!);
+          setAdding(false);
+        }}
         onSaved={(d) => {
           setDevices([...devices, d]);
           select(d.id!);

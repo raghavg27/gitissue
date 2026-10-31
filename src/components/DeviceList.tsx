@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { deleteDevice } from "@/lib/devices/actions";
 import type { DeviceProfile } from "@/lib/types";
 import { DeviceForm } from "./DeviceForm";
 
@@ -15,8 +15,8 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
     setError("");
     const index = devices.indexOf(device);
     setDevices((list) => list.filter((d) => d.id !== device.id));
-    const { error } = await createBrowserSupabase().from("device_profiles").delete().eq("id", device.id!);
-    if (error) {
+    const { ok } = await deleteDevice(device.id!).catch(() => ({ ok: false }));
+    if (!ok) {
       setDevices((list) => [...list.slice(0, index), device, ...list.slice(index)]);
       setError(`Could not delete ${device.device_model}. Check your connection and try again.`);
     }
@@ -42,7 +42,7 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
       )}
       {error && <p role="alert" className="text-sm text-rec">{error}</p>}
       {adding ? (
-        <DeviceForm onSaved={(d) => { setDevices([...devices, d]); setAdding(false); }} onCancel={() => setAdding(false)} />
+        <DeviceForm devices={devices} onSaved={(d) => { setDevices([...devices, d]); setAdding(false); }} onCancel={() => setAdding(false)} />
       ) : (
         <button onClick={() => setAdding(true)} className="h-12 w-full rounded-full border border-dashed border-white/25 px-5 font-medium text-muted transition-colors hover:border-white/50 hover:text-ink">
           Add a device
