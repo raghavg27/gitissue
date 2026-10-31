@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import type { DeviceProfile } from "@/lib/types";
+import { ActionButton } from "./ActionButton";
 
 const input = "glass h-11 w-full rounded-full px-4";
 
@@ -46,9 +47,9 @@ export function DeviceForm({ onSaved, onCancel }: { onSaved: (d: DeviceProfile) 
       <input placeholder="App version (optional)" value={form.app_version} onChange={set("app_version")} className={input} />
       {error && <p className="text-sm text-rec">{error}</p>}
       <div className="flex gap-2">
-        <button disabled={saving} className="pill h-11 flex-1 px-5">
+        <ActionButton busy={saving} busyLabel="Saving…" className="pill h-11 flex-1 px-5">
           Save device
-        </button>
+        </ActionButton>
         {onCancel && (
           <button type="button" onClick={onCancel} className="rounded-full px-5 text-muted transition-colors hover:text-ink">
             Cancel

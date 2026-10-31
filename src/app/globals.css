@@ -81,6 +81,9 @@ body {
   &:disabled {
     opacity: 0.45;
   }
+  &[aria-busy="true"] {
+    opacity: 0.8;
+  }
 }
 
 /* Darkens the centre of the live fluid so the heading stays readable. */
@@ -137,6 +140,11 @@ select {
   background-position: right 1rem center;
   background-size: 1rem;
   padding-right: 2.75rem;
+}
+
+/* A button whose server call is running: a second click does nothing. */
+[aria-busy="true"] {
+  cursor: wait;
 }
 
 /* In the base layer so utilities such as outline-none can override it. */

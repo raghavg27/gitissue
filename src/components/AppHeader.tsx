@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { NavLink } from "./NavLink";
+import { SignOutButton } from "./SignOutButton";
 
 const link = "transition-colors duration-150 hover:text-ink";
 
@@ -24,11 +26,9 @@ export function AppHeader({ signedIn, reveal = false }: { signedIn: boolean; rev
       </Link>
       {signedIn && (
         <nav className="glass flex h-10 items-center gap-4 rounded-full px-4 text-sm whitespace-nowrap text-muted sm:h-12 sm:gap-7 sm:px-7 sm:text-[0.95rem]">
-          <Link href="/reports" className={link}>My reports</Link>
-          <Link href="/settings" className={link}>Devices</Link>
-          <form action="/auth/signout" method="post" className="contents">
-            <button className={link}>Sign out</button>
-          </form>
+          <NavLink href="/reports" className={link}>My reports</NavLink>
+          <NavLink href="/settings" className={link}>Devices</NavLink>
+          <SignOutButton className={link} />
         </nav>
       )}
     </header>

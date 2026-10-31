@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { usePageRestore } from "@/hooks/usePageRestore";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { ActionButton } from "./ActionButton";
 
 export function SignIn({ next = "/" }: { next?: string }) {
   const [pending, setPending] = useState(false);
+  usePageRestore(() => setPending(false));
 
   async function signIn() {
     setPending(true);
@@ -19,9 +22,9 @@ export function SignIn({ next = "/" }: { next?: string }) {
 
   return (
     <div className="space-y-6">
-      <button onClick={signIn} disabled={pending} className="pill h-14 w-full px-6 text-lg sm:h-16">
-        {pending ? "Opening GitHub…" : "Continue with GitHub"}
-      </button>
+      <ActionButton onClick={signIn} busy={pending} busyLabel="Opening GitHub…" className="pill h-14 w-full px-6 text-lg sm:h-16">
+        Continue with GitHub
+      </ActionButton>
       <div className="space-y-3 text-sm leading-relaxed text-muted">
         <p>
           GitHub will ask for access to your repositories, including private ones. GitIssue needs it to read

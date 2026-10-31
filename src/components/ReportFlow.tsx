@@ -5,9 +5,11 @@ import type { DupOption } from "@/lib/duplicates";
 import type { RepoAccess } from "@/lib/github/repo";
 import { rememberRepo } from "@/lib/recent-repos";
 import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
+import { ActionButton } from "./ActionButton";
 import { DevicePicker } from "./DevicePicker";
 import { MicButton } from "./MicButton";
 import { ScreenshotPicker, type Shot } from "./ScreenshotPicker";
+import { Spinner } from "./Spinner";
 
 type Match = DuplicateMatch & { options: DupOption[] };
 type Analysis = { draft: Draft; duplicates: Match[]; missing: string[]; aiError?: string };
@@ -56,7 +58,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   const [shots, setShots] = useState<Shot[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  // Which server call is running, so only its button shows the spinner and every button stays disabled.
+  const [busy, setBusy] = useState<string | null>(null);
   const [step, setStep] = useState(0);
 
   useEffect(() => rememberRepo(repo.fullName), [repo.fullName]);
@@ -84,7 +87,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   }
 
   async function openComment(match: Match, action: CommentAction) {
-    setBusy(true);
+    setBusy(`comment-${match.number}`);
     setError("");
     try {
       const { body, aiError } = await api<{ body: string; aiError?: string }>("/api/comment-draft", {
@@ -97,7 +100,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     } catch (e) {
       setError((e as Error).message);
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   }
 
@@ -107,7 +110,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   }
 
   async function post(payload: Record<string, unknown>) {
-    setBusy(true);
+    setBusy("post");
     setError("");
     try {
       const result = await api<{ url: string; number: number; action: string; reopenFailed: boolean }>("/api/post", {
@@ -119,7 +122,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     } catch (e) {
       setError((e as Error).message);
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   }
 
@@ -174,13 +177,13 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           )}
           {errorBox}
           <BottomBar>
-            <button onClick={analyze} disabled={!description.trim()} className={primary}>Draft issue</button>
+            <ActionButton onClick={analyze} disabled={!description.trim()} className={primary}>Draft issue</ActionButton>
           </BottomBar>
         </>
       )}
 
       {stage.name === "analyzing" && (
-        <ol className="glass space-y-4 rounded-3xl p-6" aria-live="polite">
+        <ol className="glass space-y-4 rounded-3xl p-6" aria-live="polite" aria-busy="true" aria-label="Drafting the issue">
           {ANALYZE_STEPS.map((s, i) => (
             <li key={s} className={i <= step ? "text-ink" : "text-muted/50"}>
               <span className={`mr-2 inline-block h-2 w-2 rounded-full ${i < step ? "bg-ok" : i === step ? "animate-pulse bg-ink" : "bg-line"}`} />
@@ -208,15 +211,21 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
                     <span className="text-muted">. {m.reason}</span>
                   </p>
                 </div>
-                <button onClick={() => sameBug(m)} disabled={busy} className="glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-11 w-full px-5">
+                <ActionButton
+                  onClick={() => sameBug(m)}
+                  disabled={!!busy}
+                  busy={busy === `comment-${m.number}`}
+                  busyLabel="Drafting comment…"
+                  className="glass h-11 w-full rounded-full px-5 font-medium transition-colors hover:border-white/40 disabled:opacity-50"
+                >
                   This is my bug
-                </button>
+                </ActionButton>
               </li>
             ))}
           </ul>
           {errorBox}
           <BottomBar>
-            <button onClick={() => setStage({ name: "review" })} disabled={busy} className={primary}>
+            <button onClick={() => setStage({ name: "review" })} disabled={!!busy} className={primary}>
               It&apos;s a different bug
             </button>
           </BottomBar>
@@ -230,11 +239,19 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             <p className="text-muted">You can&apos;t reopen it on this repo. How should this report go in?</p>
           </div>
           <div className="space-y-3">
-            <button onClick={() => openComment(stage.match, "comment")} disabled={busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
-              <span className="block font-medium">Comment on #{stage.match.number}</span>
+            <button
+              onClick={() => openComment(stage.match, "comment")}
+              disabled={!!busy}
+              aria-busy={busy === `comment-${stage.match.number}` || undefined}
+              className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50"
+            >
+              <span className="flex items-center gap-2 font-medium">
+                {busy === `comment-${stage.match.number}` && <Spinner />}
+                {busy === `comment-${stage.match.number}` ? "Drafting comment…" : `Comment on #${stage.match.number}`}
+              </span>
               <span className="text-sm text-muted">Maintainers watching it get notified.</span>
             </button>
-            <button onClick={() => setStage({ name: "review", regressionOf: stage.match.number })} disabled={busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
+            <button onClick={() => setStage({ name: "review", regressionOf: stage.match.number })} disabled={!!busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
               <span className="block font-medium">New issue as a possible regression</span>
               <span className="text-sm text-muted">Opens a fresh issue that links back to #{stage.match.number}.</span>
             </button>
@@ -255,8 +272,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
               {privateShotsWarning}
               {errorBox}
               <BottomBar>
-                <button onClick={reset} disabled={busy} className={secondary}>Discard</button>
-                <button
+                <button onClick={reset} disabled={!!busy} className={secondary}>Discard</button>
+                <ActionButton
                   onClick={() =>
                     post({
                       action: stage.regressionOf ? "new_regression" : "create",
@@ -266,11 +283,13 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
                       labels: analysis.draft.labels,
                     })
                   }
-                  disabled={busy || !analysis.draft.title.trim()}
+                  disabled={!analysis.draft.title.trim()}
+                  busy={busy === "post"}
+                  busyLabel="Posting…"
                   className={primary}
                 >
-                  {busy ? "Posting…" : "Post issue"}
-                </button>
+                  Post issue
+                </ActionButton>
               </BottomBar>
             </>
           }
@@ -298,14 +317,16 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           {privateShotsWarning}
           {errorBox}
           <BottomBar>
-            <button onClick={reset} disabled={busy} className={secondary}>Discard</button>
-            <button
+            <button onClick={reset} disabled={!!busy} className={secondary}>Discard</button>
+            <ActionButton
               onClick={() => post({ action: stage.action, issueNumber: stage.match.number, body: stage.body })}
-              disabled={busy || !stage.body.trim()}
+              disabled={!stage.body.trim()}
+              busy={busy === "post"}
+              busyLabel="Posting…"
               className={primary}
             >
-              {busy ? "Posting…" : stage.action === "reopen_comment" ? "Reopen and comment" : "Post comment"}
-            </button>
+              {stage.action === "reopen_comment" ? "Reopen and comment" : "Post comment"}
+            </ActionButton>
           </BottomBar>
         </>
       )}
@@ -440,9 +461,15 @@ function DraftReview({
             className="glass h-12 min-w-0 flex-1 rounded-full px-5"
           />
           <MicButton size="sm" onText={(t) => setInstruction((s) => appendText(s, t))} />
-          <button onClick={refine} disabled={refining || !instruction.trim()} className="glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-12 px-5">
-            {refining ? "Updating…" : "Apply"}
-          </button>
+          <ActionButton
+            onClick={refine}
+            disabled={!instruction.trim()}
+            busy={refining}
+            busyLabel="Updating…"
+            className="glass h-12 rounded-full px-5 font-medium transition-colors hover:border-white/40 disabled:opacity-50"
+          >
+            Apply
+          </ActionButton>
         </div>
         {refineError && <p className="text-sm text-rec">{refineError}</p>}
       </div>

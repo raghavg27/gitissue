@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
+import { usePageRestore } from "@/hooks/usePageRestore";
 import { readRecentRepos } from "@/lib/recent-repos";
 import { parseRepoUrl } from "@/lib/repo-url";
+import { ActionButton } from "./ActionButton";
+import { NavLink } from "./NavLink";
 
 const noSubscribe = () => () => {};
 const appHost = process.env.NEXT_PUBLIC_APP_URL && new URL(process.env.NEXT_PUBLIC_APP_URL).host;
@@ -13,6 +15,8 @@ export function RepoPicker() {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
+  const [opening, startOpening] = useTransition();
+  usePageRestore(() => setError(""));
   const recent = useSyncExternalStore(noSubscribe, () => readRecentRepos().join("\n"), () => "")
     .split("\n")
     .filter(Boolean);
@@ -21,7 +25,7 @@ export function RepoPicker() {
     e.preventDefault();
     const ref = parseRepoUrl(value);
     if (!ref) return setError("That doesn't look like a GitHub repo. Paste a link like github.com/owner/repo.");
-    router.push(`/${ref.owner}/${ref.repo}`);
+    startOpening(() => router.push(`/${ref.owner}/${ref.repo}`));
   }
 
   return (
@@ -44,7 +48,9 @@ export function RepoPicker() {
             inputMode="url"
             className="h-full min-w-0 flex-1 bg-transparent text-base outline-none sm:text-lg"
           />
-          <button className="pill h-11 shrink-0 px-5 text-[0.95rem] sm:h-12 sm:px-6">Open repo</button>
+          <ActionButton busy={opening} busyLabel="Opening…" className="pill h-11 shrink-0 px-5 text-[0.95rem] sm:h-12 sm:px-6">
+            Open repo
+          </ActionButton>
         </div>
         {error && <p className="text-sm text-rec">{error}</p>}
         {appHost && (
@@ -60,9 +66,9 @@ export function RepoPicker() {
           <ul className="flex flex-wrap justify-center gap-2">
             {recent.map((r) => (
               <li key={r}>
-                <Link href={`/${r}`} className="glass block rounded-full px-4 py-2 text-sm transition-colors hover:border-white/40">
+                <NavLink href={`/${r}`} className="glass block rounded-full px-4 py-2 text-sm transition-colors hover:border-white/40">
                   {r}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>
