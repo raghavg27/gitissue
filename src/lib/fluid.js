@@ -1,5 +1,5 @@
 // WebGL fluid simulation by Pavel Dobryakov (MIT), tuned for an oily ink-in-water look.
-// Changes from the original: tuned config, load burst, cyan to magenta palette, an auto-cursor
+// Changes from the original: tuned config, load burst, ember palette (rose to amber), an auto-cursor
 // that orbits the centre, a calm mode for working screens and a still frame for reduced motion.
 // Returns a destroy function. Throws when WebGL is not available.
 export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
@@ -18,7 +18,7 @@ export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
         SHADING: true,
         COLORFUL: true,
         PAUSED: false,
-        BACK_COLOR: { r: 4, g: 5, b: 12 }, // deep near-black base (immersive)
+        BACK_COLOR: { r: 12, g: 7, b: 5 }, // warm near-black base, like cooling embers
         TRANSPARENT: false,
         BLOOM: false,
         BLOOM_ITERATIONS: 8,
@@ -1147,13 +1147,13 @@ export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
     };
 
     function generateColor() {
-        // Electric cyan→blue→violet→magenta band, full brightness, for a vivid,
-        // slick, immersive palette.
-        const h = 0.5 + Math.random() * 0.42;
-        let c = HSVtoRGB(h, 0.95, 1.0);
-        c.r *= 0.92;
-        c.g *= 0.92;
-        c.b *= 0.92;
+        // Ember band: deep rose → red → orange → amber. Slightly dimmed so dense
+        // ink stays orange instead of washing out to yellow-white.
+        const h = (0.96 + Math.random() * 0.16) % 1;
+        let c = HSVtoRGB(h, 0.92, 1.0);
+        c.r *= 0.85;
+        c.g *= 0.85;
+        c.b *= 0.85;
         return c;
     }
 
