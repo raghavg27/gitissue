@@ -98,7 +98,7 @@ export function ScreenshotPicker({
           e.target.value = "";
         }}
       />
-      {error && <p className="text-sm text-rec">{error}</p>}
+      {error && <p role="alert" className="text-sm text-rec">{error}</p>}
     </div>
   );
 }

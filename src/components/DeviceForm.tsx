@@ -36,17 +36,24 @@ export function DeviceForm({
     setExisting(null);
   };
 
+  // Shows each field error and moves focus to the first bad field, where its error is read out.
+  function showErrors(next: DeviceErrors) {
+    setErrors(next);
+    const first = (["device_model", "platform", "os_version", "app_version"] as const).find((k) => next[k]);
+    if (first) requestAnimationFrame(() => document.getElementById(`device-${first}`)?.focus());
+  }
+
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     const checked = validateDevice(form);
-    if (!checked.ok) return setErrors(checked.errors);
+    if (!checked.ok) return showErrors(checked.errors);
     const match = devices.find((d) => sameDevice(d, checked.value));
     if (match) return setExisting(match);
     setSaving(true);
     const result = await saveDevice(form).catch(() => ({ error: "Could not reach GitIssue. Check your internet and try again." }));
     setSaving(false);
-    if ("errors" in result) return setErrors(result.errors);
+    if ("errors" in result) return showErrors(result.errors);
     if ("error" in result) return setError(result.error);
     onSaved(result.device);
   }

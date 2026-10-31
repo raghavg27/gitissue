@@ -397,7 +397,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             </h2>
             <p className="line-clamp-2 text-muted">{stage.match.title}</p>
           </div>
-          {stage.aiError && <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{stage.aiError}</p>}
+          {stage.aiError && <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{stage.aiError}</p>}
           <label htmlFor="comment" className="sr-only">Comment</label>
           <textarea
             id="comment"
@@ -428,14 +428,14 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
 
       {stage.name === "posted" && (
         <div className="space-y-4 pt-4">
-          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
+          <h2 role="status" className="text-3xl font-medium tracking-tight sm:text-4xl">
             {stage.action === "created" ? "Issue created" : stage.action === "reopened" ? "Issue reopened" : "Comment posted"}
           </h2>
           <a href={stage.url} target="_blank" rel="noreferrer" className="block truncate text-lg font-medium underline underline-offset-4">
             {repo.fullName}#{stage.number}
           </a>
           {stage.reopenFailed && (
-            <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
+            <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
               GitHub didn&apos;t let you reopen this issue, so it stays closed. Your comment was posted.
             </p>
           )}
@@ -487,7 +487,7 @@ function DraftReview({
 
   return (
     <>
-      {aiError && <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{aiError}</p>}
+      {aiError && <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{aiError}</p>}
       {draft.missingFields.length > 0 && (
         <div className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
           <p className="font-medium">
@@ -578,7 +578,7 @@ function DraftReview({
             Apply
           </ActionButton>
         </div>
-        {refineError && <p className="text-sm text-rec">{refineError}</p>}
+        {refineError && <p role="alert" className="text-sm text-rec">{refineError}</p>}
       </div>
       {missing.length > 0 && (
         <p className="text-sm text-muted">Drafted without: {missing.join("; ")}.</p>

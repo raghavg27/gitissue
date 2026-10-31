@@ -15,7 +15,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       sub="GitIssue turns what you say into an issue that follows the repo's template and uses the app's real screen names. If the bug is already reported, your findings go on that issue."
     >
       {error === "auth" && (
-        <p className="mb-4 rounded-2xl bg-warn-bg px-5 py-3 text-warn-ink">GitHub sign-in did not finish. Try again.</p>
+        <p role="alert" className="mb-4 rounded-2xl bg-warn-bg px-5 py-3 text-warn-ink">GitHub sign-in did not finish. Try again.</p>
       )}
       <RepoPicker initialError={error === "repo" ? REPO_URL_ERROR : ""} />
       {!viewer && (

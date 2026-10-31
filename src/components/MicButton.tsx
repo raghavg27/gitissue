@@ -71,8 +71,9 @@ export function MicButton({ onText, size = "lg" }: { onText: (text: string) => v
           </svg>
         )}
       </button>
-      {recording && <span className="text-xs font-medium text-rec">Listening</span>}
-      {error && <span className="text-xs text-rec">{error}</span>}
+      {/* Always in the page, so screen readers announce the change. */}
+      <span role="status" className="text-xs font-medium text-rec">{recording ? "Listening" : ""}</span>
+      {error && <span role="alert" className="text-xs text-rec">{error}</span>}
     </div>
   );
 }
