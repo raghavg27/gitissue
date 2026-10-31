@@ -43,6 +43,12 @@ async function api<T>(path: string, body: unknown): Promise<T> {
   return data;
 }
 
+// A small reward for a posted report. The library loads only now, and it stays still for reduced motion.
+async function celebrate() {
+  const { default: confetti } = await import("canvas-confetti");
+  confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 }, disableForReducedMotion: true });
+}
+
 const appendText = (prev: string, text: string) => (prev.trim() ? `${prev.trimEnd()} ${text}` : text);
 
 // Shows the count only near the limit, so it helps without adding noise.
@@ -157,6 +163,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
         screenshots: shots.map((s) => s.url),
       });
       setStage({ name: "posted", ...result });
+      celebrate().catch(() => {});
     } catch (e) {
       setError((e as Error).message);
     } finally {
