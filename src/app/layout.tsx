@@ -1,15 +1,15 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { Onest } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import { HashFocus } from "@/components/HashFocus";
 import { PageRestore } from "@/components/PageRestore";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { BRAND, siteUrl } from "@/lib/site";
 import "./globals.css";
 
-// Self-hosted by next/font; text shows at once in a fallback font while Onest loads.
-const body = Onest({ variable: "--font-body", subsets: ["latin"], display: "swap" });
+// Self-hosted by next/font; text shows at once in a fallback font while Space Grotesk loads.
+const body = Space_Grotesk({ variable: "--font-body", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
