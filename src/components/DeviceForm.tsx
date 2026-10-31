@@ -19,13 +19,16 @@ export function DeviceForm({
   onSaved,
   onCancel,
   onUseExisting,
+  initial,
 }: {
   devices: DeviceProfile[];
   onSaved: (d: DeviceProfile) => void;
   onCancel?: () => void;
   onUseExisting?: (d: DeviceProfile) => void;
+  // Values detected from this browser; the tester checks them, fills any gap, then saves.
+  initial?: { device_model: string; platform: string; os_version: string };
 }) {
-  const [form, setForm] = useState({ device_model: "", platform: "Android", os_version: "", app_version: "" });
+  const [form, setForm] = useState({ device_model: "", platform: "Android", os_version: "", app_version: "", ...initial });
   const [errors, setErrors] = useState<DeviceErrors>({});
   const [error, setError] = useState("");
   const [existing, setExisting] = useState<DeviceProfile | null>(null);
@@ -69,6 +72,11 @@ export function DeviceForm({
 
   return (
     <form onSubmit={save} noValidate className="glass space-y-3 rounded-3xl p-5">
+      {initial && (
+        <p className="text-sm text-muted">
+          Detected from this browser. Check the details{initial.os_version ? "" : " and add the OS version"}, then save.
+        </p>
+      )}
       <div>
         <label htmlFor="device-device_model" className={labelText}>Device</label>
         <input {...field("device_model")} required maxLength={LIMITS.device_model.max} placeholder="For example, Pixel 7" value={form.device_model} onChange={set("device_model")} className={input} />
@@ -86,7 +94,7 @@ export function DeviceForm({
         </div>
         <div className="min-w-0 flex-1">
           <label htmlFor="device-os_version" className={labelText}>OS version</label>
-          <input {...field("os_version")} required maxLength={LIMITS.os_version.max} placeholder="For example, 15" value={form.os_version} onChange={set("os_version")} className={input} />
+          <input {...field("os_version")} autoFocus={!!initial && !initial.os_version} required maxLength={LIMITS.os_version.max} placeholder="For example, 15" value={form.os_version} onChange={set("os_version")} className={input} />
           {fieldError("os_version")}
         </div>
       </div>

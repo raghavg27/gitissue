@@ -28,7 +28,7 @@ export const FEATURES = [
   },
   {
     name: "Saved devices",
-    what: "Save the phones and browsers you test on, and pick one for each report.",
+    what: "Detect the device and browser you test on in one tap, or enter it by hand. Saved devices can be picked for each report.",
     why: "The device and OS version are the details that bug reports most often forget.",
   },
   {

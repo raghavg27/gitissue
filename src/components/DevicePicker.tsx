@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { detectDevice, type DetectedDevice } from "@/lib/device-detect";
 import type { DeviceProfile } from "@/lib/types";
 import { DeviceForm } from "./DeviceForm";
 
 const KEY = "gitissue:device";
 
-// Pick the device under test once per session; the choice is remembered on this browser (FR-17).
+// Detect this device first, enter one by hand second, or pick a saved one. The choice is remembered on this browser (FR-17).
 export function DevicePicker({
   devices: initial,
   value,
@@ -17,7 +18,7 @@ export function DevicePicker({
   onChange: (id: string) => void;
 }) {
   const [devices, setDevices] = useState(initial);
-  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState<{ detected?: DetectedDevice } | null>(null);
 
   useEffect(() => {
     try {
@@ -29,43 +30,67 @@ export function DevicePicker({
   function select(id: string) {
     onChange(id);
     try {
-      localStorage.setItem(KEY, id);
+      if (id) localStorage.setItem(KEY, id);
+      else localStorage.removeItem(KEY);
     } catch {}
   }
 
-  if (adding) {
+  if (form) {
     return (
       <DeviceForm
         devices={devices}
-        onCancel={() => setAdding(false)}
+        initial={form.detected}
+        onCancel={() => setForm(null)}
         onUseExisting={(d) => {
           select(d.id!);
-          setAdding(false);
+          setForm(null);
         }}
         onSaved={(d) => {
           setDevices([...devices, d]);
           select(d.id!);
-          setAdding(false);
+          setForm(null);
         }}
       />
     );
   }
 
+  const chosen = devices.find((d) => d.id === value);
+  if (chosen) {
+    return (
+      <div className="glass flex items-center justify-between gap-3 rounded-full py-2 pr-2 pl-5">
+        <span className="min-w-0 truncate">{chosen.label}</span>
+        <button type="button" onClick={() => select("")} className="h-9 shrink-0 rounded-full px-4 text-sm text-muted transition-colors hover:text-ink">
+          Change
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-2">
-      <label htmlFor="device" className="sr-only">Device</label>
-      <select
-        id="device"
-        value={value}
-        onChange={(e) => (e.target.value === "__add" ? setAdding(true) : select(e.target.value))}
-        className="glass h-11 min-w-0 flex-1 rounded-full px-4"
-      >
-        <option value="">No device</option>
-        {devices.map((d) => (
-          <option key={d.id} value={d.id}>{d.label}</option>
-        ))}
-        <option value="__add">Add a device…</option>
-      </select>
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={async () => setForm({ detected: await detectDevice() })}
+          className="pill h-11 px-5"
+        >
+          Detect this device
+        </button>
+        <button type="button" onClick={() => setForm({})} className="h-11 rounded-full px-3 text-muted underline-offset-4 transition-colors hover:text-ink hover:underline">
+          Enter it by hand
+        </button>
+      </div>
+      {devices.length > 0 && (
+        <div>
+          <label htmlFor="device" className="sr-only">Or pick a saved device</label>
+          <select id="device" value="" onChange={(e) => select(e.target.value)} className="glass h-11 w-full rounded-full px-4">
+            <option value="">Or pick a saved device</option>
+            {devices.map((d) => (
+              <option key={d.id} value={d.id}>{d.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 }
