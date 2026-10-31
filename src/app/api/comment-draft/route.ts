@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildCommentPrompt, parseComment } from "@/lib/ai/draft";
 import { generateJson } from "@/lib/ai/provider";
-import { fail, loadDevice, withRepo } from "@/lib/api";
+import { fail, limited, loadDevice, withRepo } from "@/lib/api";
 import { SCREENSHOT_MARKER } from "@/lib/issue-body";
 import { validateText } from "@/lib/validation";
 import { logError } from "@/lib/log";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -16,6 +17,8 @@ export async function POST(request: NextRequest) {
   const description = checked.value;
   const result = await withRepo(owner, repo);
   if ("response" in result) return result.response;
+  const limit = await checkRateLimit("draft", result.viewer.userId);
+  if (limit) return limited(limit);
   const { viewer, access } = result;
 
   const [issue, comments, device] = await Promise.all([

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { fail } from "@/lib/api";
+import { fail, limited } from "@/lib/api";
 import { getViewer } from "@/lib/github/client";
 import { logError } from "@/lib/log";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { validateImage } from "@/lib/validation";
 
@@ -10,6 +11,8 @@ import { validateImage } from "@/lib/validation";
 export async function POST(request: NextRequest) {
   const viewer = await getViewer();
   if (!viewer) return fail(401, "Your session ended. Sign in with GitHub again; your draft is saved.");
+  const limit = await checkRateLimit("upload", viewer.userId);
+  if (limit) return limited(limit);
   const image = validateImage(await request.json().catch(() => ({})));
   if (!image.ok) return fail(400, image.error);
 

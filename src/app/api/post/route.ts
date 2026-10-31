@@ -1,6 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
-import { fail, withRepo } from "@/lib/api";
+import { fail, limited, withRepo } from "@/lib/api";
 import { reportsTag } from "@/lib/data";
 import { publicEnv } from "@/lib/env";
 import { duplicateOptions } from "@/lib/duplicates";
@@ -8,6 +8,7 @@ import { attachScreenshots } from "@/lib/issue-body";
 import { createClient } from "@/lib/supabase/server";
 import { MAX_SCREENSHOTS, validateIssue } from "@/lib/validation";
 import { logError } from "@/lib/log";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 type Action = "create" | "comment" | "reopen_comment" | "new_regression";
 const ACTIONS: Action[] = ["create", "comment", "reopen_comment", "new_regression"];
@@ -36,6 +37,8 @@ export async function POST(request: NextRequest) {
 
   const result = await withRepo(owner, repo);
   if ("response" in result) return result.response;
+  const limit = await checkRateLimit("post", result.viewer.userId);
+  if (limit) return limited(limit);
   const { viewer, access } = result;
   const gh = viewer.octokit;
   const base = { owner: access.owner, repo: access.repo };

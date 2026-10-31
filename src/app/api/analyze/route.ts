@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildAnalyzePrompt, fallbackDraft, parseAnalyzeResponse } from "@/lib/ai/draft";
 import { generateJson } from "@/lib/ai/provider";
-import { fail, loadDevice, withRepo } from "@/lib/api";
+import { fail, limited, loadDevice, withRepo } from "@/lib/api";
 import { gatherContext } from "@/lib/context/gather";
 import { duplicateOptions, searchCandidates } from "@/lib/duplicates";
 import { extractKeywords } from "@/lib/keywords";
 import { validateText } from "@/lib/validation";
 import type { Draft, DuplicateMatch } from "@/lib/types";
 import { logError } from "@/lib/log";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -18,6 +19,8 @@ export async function POST(request: NextRequest) {
   const description = checked.value;
   const result = await withRepo(owner, repo);
   if ("response" in result) return result.response;
+  const limit = await checkRateLimit("draft", result.viewer.userId);
+  if (limit) return limited(limit);
   const { viewer, access } = result;
 
   const [ctx, candidates, device] = await Promise.all([

@@ -14,6 +14,8 @@ export function safeNextPath(value: string | null | undefined): string {
 }
 
 export const BRAND = "GitIssue";
+// Cookie with a random ID per browser, used only as a hash for per-device rate limits.
+export const DEVICE_COOKIE = "gi_device";
 export const REPO_URL = "https://github.com/raghavg27/gitissue";
 export const SUPPORT_URL = "https://buymeacoffee.com/raghavg27";
 export const SECURITY_URL = `${REPO_URL}/security/advisories/new`;

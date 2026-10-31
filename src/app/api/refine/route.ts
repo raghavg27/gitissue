@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildRefinePrompt, parseDraft } from "@/lib/ai/draft";
 import { generateJson } from "@/lib/ai/provider";
-import { fail, withRepo } from "@/lib/api";
+import { fail, limited, withRepo } from "@/lib/api";
 import { gatherContext } from "@/lib/context/gather";
 import { validateIssue, validateText } from "@/lib/validation";
 import { logError } from "@/lib/log";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -17,6 +18,8 @@ export async function POST(request: NextRequest) {
   const draft = { ...rawDraft, ...issue.value };
   const result = await withRepo(owner, repo);
   if ("response" in result) return result.response;
+  const limit = await checkRateLimit("draft", result.viewer.userId);
+  if (limit) return limited(limit);
 
   const ctx = await gatherContext(result.viewer.octokit, result.access, `${draft.title} ${instruction.value}`);
   try {

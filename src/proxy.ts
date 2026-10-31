@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { publicEnv } from "@/lib/env";
+import { DEVICE_COOKIE } from "@/lib/site";
 
 const PRIVATE_PAGES = ["/reports", "/devices"];
 
@@ -26,6 +27,16 @@ export async function proxy(request: NextRequest) {
   // Signed-in pages redirect here, before their loading skeleton starts the stream and fixes the status at 200.
   if (!data.user && PRIVATE_PAGES.some((p) => request.nextUrl.pathname.startsWith(p))) {
     return NextResponse.redirect(new URL("/", request.url));
+  }
+  // A random ID for this browser, used only (as a hash) to rate-limit per device.
+  if (!request.cookies.has(DEVICE_COOKIE)) {
+    response.cookies.set(DEVICE_COOKIE, crypto.randomUUID(), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+      path: "/",
+    });
   }
   return response;
 }

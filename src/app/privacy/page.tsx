@@ -36,7 +36,7 @@ export default function Privacy() {
         <p>GitIssue does not keep your email address. It does not keep the text that you dictate after the issue is posted; that text is in the GitHub issue, under your name.</p>
 
         <h2>What stays on your device</h2>
-        <p>Your draft, recent repos and last device choice are kept in the local storage of your browser. They do not leave your device until you ask for a draft or post. GitIssue uses only the cookies that keep you signed in. It does not use cookies for analytics or ads.</p>
+        <p>Your draft, recent repos and last device choice are kept in the local storage of your browser. They do not leave your device until you ask for a draft or post. GitIssue uses only two kinds of cookies: the ones that keep you signed in, and one with a random device ID that is used, as a hash, only for rate limits. It does not use cookies for analytics or ads.</p>
 
         <h2>Outside services that receive data</h2>
         <table>

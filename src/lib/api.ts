@@ -2,10 +2,15 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { getViewer, type Viewer } from "@/lib/github/client";
 import { getRepoAccess, type RepoAccess } from "@/lib/github/repo";
+import type { Limited } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import type { DeviceProfile } from "@/lib/types";
 
 export const fail = (status: number, error: string) => NextResponse.json({ error }, { status });
+
+// 429 with the limit in plain words and the standard Retry-After header.
+export const limited = ({ message, retryAfter }: Limited) =>
+  NextResponse.json({ error: message }, { status: 429, headers: { "Retry-After": String(retryAfter) } });
 
 // Resolves the signed-in viewer and their access to owner/repo, or the error response to return.
 export async function withRepo(

@@ -2,6 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { devicesTag } from "@/lib/data";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import type { DeviceProfile } from "@/lib/types";
 import { validateDevice, type DeviceErrors, type DeviceInput } from "@/lib/validation";
@@ -15,6 +16,10 @@ export async function saveDevice(input: DeviceInput): Promise<SaveDeviceResult> 
   const checked = validateDevice(input);
   if (!checked.ok) return { errors: checked.errors };
   const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return { error: "Your session ended. Sign in with GitHub again." };
+  const limit = await checkRateLimit("device", auth.user.id);
+  if (limit) return { error: limit.message };
   const { data, error } = await supabase.from("device_profiles").insert(checked.value).select().single();
   if (error) return { error: "Could not save the device. Check your connection and try again." };
   updateTag(devicesTag(data.user_id));
