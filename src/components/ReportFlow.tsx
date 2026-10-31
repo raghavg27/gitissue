@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import type { DupOption } from "@/lib/duplicates";
 import type { RepoAccess } from "@/lib/github/repo";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/drafts";
@@ -27,7 +28,7 @@ type Stage =
   | { name: "choose"; match: Match }
   | { name: "review"; regressionOf?: number }
   | { name: "comment"; match: Match; action: CommentAction; body: string; aiError?: string }
-  | { name: "posted"; url: string; number: number; action: string; reopenFailed: boolean };
+  | { name: "posted"; url: string; number: number; action: string; reopenFailed: boolean; reportCount?: number; title: string; seconds?: number };
 
 // What is kept on the device between visits. A draft that was still analyzing goes back to the describe step.
 type SavedDraft = { description: string; shots: Shot[]; analysis: Analysis | null; stage: Stage };
@@ -53,6 +54,9 @@ async function celebrate() {
   const { default: confetti } = await import("canvas-confetti");
   confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 }, disableForReducedMotion: true });
 }
+
+// Whole seconds since a start time, or nothing when the start is unknown.
+const secondsSince = (start: number | null) => (start ? Math.round((Date.now() - start) / 1000) : undefined);
 
 const appendText = (prev: string, text: string) => (prev.trim() ? `${prev.trimEnd()} ${text}` : text);
 
@@ -121,6 +125,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   const [step, setStep] = useState(0);
 
   const speech = useSpeechSupported();
+  // When the tester first typed or spoke on this visit, to show the real time taken. Unknown for a restored draft.
+  const startedAt = useRef<number | null>(null);
   const [restored, setRestored] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
@@ -196,12 +202,13 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     setBusy("post");
     setError("");
     try {
-      const result = await api<{ url: string; number: number; action: string; reopenFailed: boolean }>("/api/post", {
+      const result = await api<{ url: string; number: number; action: string; reopenFailed: boolean; reportCount?: number }>("/api/post", {
         ...repoArgs,
         ...payload,
         screenshots: shots.map((s) => s.url),
       });
-      setStage({ name: "posted", ...result });
+      const title = stage.name === "comment" ? stage.match.title : (analysis?.draft.title ?? "");
+      setStage({ name: "posted", ...result, title, seconds: secondsSince(startedAt.current) });
       celebrate().catch(() => {});
     } catch (e) {
       setError((e as Error).message);
@@ -242,6 +249,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     setShots([]);
     setAnalysis(null);
     setError("");
+    startedAt.current = null;
     setStage({ name: "describe" });
   }
 
@@ -283,12 +291,20 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
                   maxLength={LIMITS.description.max}
                   aria-describedby="dictation-tip description-count"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    startedAt.current ??= Date.now();
+                    setDescription(e.target.value);
+                  }}
                   rows={7}
                   placeholder="Say it the way you would tell the developer: what you did, what you expected, what happened instead."
                   className="glass min-w-0 flex-1 rounded-3xl px-5 py-4 text-lg leading-relaxed"
                 />
-                <MicButton onText={(t) => setDescription((d) => appendText(d, t))} />
+                <MicButton
+                  onText={(t) => {
+                    startedAt.current ??= Date.now();
+                    setDescription((d) => appendText(d, t));
+                  }}
+                />
               </div>
               <p id="dictation-tip" className="text-sm text-muted">
                 Tip: dictate with{" "}
@@ -469,23 +485,111 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       )}
 
       {stage.name === "posted" && (
-        <div className="space-y-4 pt-4">
-          <h2 role="status" className="text-3xl font-medium tracking-tight sm:text-4xl">
-            {stage.action === "created" ? "Issue created" : stage.action === "reopened" ? "Issue reopened" : "Comment posted"}
-          </h2>
-          <ExternalLink href={stage.url} className="block truncate text-lg font-medium underline underline-offset-4">
-            {repo.fullName}#{stage.number}
-          </ExternalLink>
-          {stage.reopenFailed && (
-            <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
-              GitHub did not let you reopen this issue, so it stays closed. Your comment was posted.
-            </p>
-          )}
-          <BottomBar>
-            <button onClick={reset} className={primary}>Report another bug</button>
-          </BottomBar>
-        </div>
+        <Posted
+          stage={stage}
+          repo={repo.fullName}
+          screenNames={analysis?.draft.screenNames.length ?? 0}
+          shots={shots.length}
+          device={!!deviceId}
+          onAnother={reset}
+        />
       )}
+    </div>
+  );
+}
+
+const ordinal = (n: number) => {
+  const end = n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th";
+  return `${n}${end}`;
+};
+
+const duration = (s: number) => (s < 60 ? `${s} seconds` : `${Math.floor(s / 60)} min ${s % 60} s`);
+
+// The success screen: what the developer now has, why it matters, and an easy way to report the next bug.
+function Posted({
+  stage,
+  repo,
+  screenNames,
+  shots,
+  device,
+  onAnother,
+}: {
+  stage: Extract<Stage, { name: "posted" }>;
+  repo: string;
+  screenNames: number;
+  shots: number;
+  device: boolean;
+  onAnother: () => void;
+}) {
+  const created = stage.action === "created";
+  const heading = created
+    ? "Your bug is on GitHub"
+    : stage.action === "reopened"
+      ? `Issue #${stage.number} is open again`
+      : `Your findings are on #${stage.number}`;
+  const gains = [
+    created ? "Written in the format this repo asks for" : "Added to the existing issue, not posted as a duplicate",
+    created && "Checked against open and closed issues first",
+    screenNames > 0 && `${plural(screenNames, "real screen name")} from the code`,
+    shots > 0 && `${plural(shots, "screenshot")} attached`,
+    device && "Device and OS details included",
+    stage.seconds && `Done in ${duration(stage.seconds)}`,
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className="space-y-6 pt-4">
+      <div className="space-y-3">
+        <span aria-hidden className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-ok/15 text-ok">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
+            <path d="m5 12.5 4.5 4.5L19 7.5" />
+          </svg>
+        </span>
+        <h2 role="status" className="text-3xl font-medium tracking-tight sm:text-4xl">{heading}</h2>
+        <p className="text-lg text-muted">Nice work. The developer now has what they need to find and fix it.</p>
+      </div>
+
+      <div className="glass space-y-3 rounded-3xl p-5">
+        <p className="text-sm text-muted">{repo}#{stage.number}</p>
+        {stage.title && <p className="line-clamp-2 font-medium">{stage.title}</p>}
+        <ExternalLink href={stage.url} className="inline-flex font-medium underline underline-offset-4">Open on GitHub</ExternalLink>
+      </div>
+
+      {stage.reopenFailed && (
+        <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
+          GitHub did not let you reopen this issue, so it stays closed. Your comment was posted.
+        </p>
+      )}
+
+      <section aria-labelledby="gains" className="space-y-3">
+        <h3 id="gains" className="font-medium">What the developer gets</h3>
+        <ul className="space-y-2">
+          {gains.map((g) => (
+            <li key={g} className="flex gap-3">
+              <span aria-hidden className="text-ok">✓</span>
+              {g}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="matters" className="glass space-y-2 rounded-3xl p-5 text-muted">
+        <h3 id="matters" className="font-medium text-ink">Why this matters</h3>
+        <p>By hand, you fill in the template, look up the screen names and search the old issues yourself. Most people give up halfway.</p>
+        <p>A bug that nobody reports stays, and the next person hits it too.</p>
+        <p>This time you talked for a moment, and the bug is in the queue with everything needed to fix it.</p>
+      </section>
+
+      {stage.reportCount !== undefined && stage.reportCount > 0 && (
+        <p>
+          That is your {ordinal(stage.reportCount)} report with GitIssue. Keep them coming.{" "}
+          <Link href="/reports" className="text-muted underline underline-offset-4 hover:text-ink">See my reports</Link>
+        </p>
+      )}
+
+      <BottomBar>
+        <ExternalLink href={stage.url} className={`${secondary} inline-flex items-center`}>View on GitHub</ExternalLink>
+        <button onClick={onAnother} className={primary}>Report another bug</button>
+      </BottomBar>
     </div>
   );
 }

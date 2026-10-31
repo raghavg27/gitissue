@@ -101,5 +101,8 @@ export async function POST(request: NextRequest) {
   if (error) logError("post: saving report history failed", error);
   else revalidateTag(reportsTag(viewer.userId), { expire: 0 });
 
-  return NextResponse.json({ url, number, action: recorded, reopenFailed });
+  // For the success screen: how many reports this tester has sent. Left out if the count fails.
+  const { count } = await supabase.from("reports").select("id", { count: "exact", head: true }).eq("user_id", viewer.userId);
+
+  return NextResponse.json({ url, number, action: recorded, reopenFailed, reportCount: count ?? undefined });
 }
