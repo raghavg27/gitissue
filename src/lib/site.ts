@@ -3,7 +3,8 @@
 export function siteUrl(): string {
   if (process.env.NODE_ENV === "development") return `http://localhost:${process.env.PORT || 3000}`;
   if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/+$/, "");
+  // The origin is lowercase with no trailing slash, so it matches Supabase's list of allowed redirect URLs.
+  return new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").origin;
 }
 
 // A return path after sign-in must stay on this site: one leading slash, no backslash, no control characters.

@@ -22,6 +22,11 @@ describe("siteUrl", () => {
     expect(siteUrl()).toBe("https://gitissue.example");
   });
 
+  it("writes the address in one form, so Supabase and the CSP match it", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "httpS://GitIssue.example/");
+    expect(siteUrl()).toBe("https://gitissue.example");
+  });
+
   it("uses the deployment URL on a Vercel preview", () => {
     vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://gitissue.example");
     vi.stubEnv("VERCEL_ENV", "preview");
