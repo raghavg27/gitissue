@@ -4,6 +4,7 @@ import { generateJson } from "@/lib/ai/provider";
 import { fail, withRepo } from "@/lib/api";
 import { gatherContext } from "@/lib/context/gather";
 import { validateIssue, validateText } from "@/lib/validation";
+import { logError } from "@/lib/log";
 
 export const maxDuration = 60;
 
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     const raw = await generateJson(buildRefinePrompt({ draft, instruction: instruction.value, ctx }));
     return NextResponse.json({ draft: parseDraft(raw, ctx) });
   } catch (e) {
-    console.error("refine: AI failed", e);
+    logError("refine: AI failed", e);
     return fail(503, "The AI couldn't refine the draft. Edit it directly instead.");
   }
 }

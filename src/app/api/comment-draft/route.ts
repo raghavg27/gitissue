@@ -4,6 +4,7 @@ import { generateJson } from "@/lib/ai/provider";
 import { fail, loadDevice, withRepo } from "@/lib/api";
 import { SCREENSHOT_MARKER } from "@/lib/issue-body";
 import { validateText } from "@/lib/validation";
+import { logError } from "@/lib/log";
 
 export const maxDuration = 60;
 
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     );
     return NextResponse.json({ body: parseComment(raw) });
   } catch (e) {
-    console.error("comment-draft: AI failed", e);
+    logError("comment-draft: AI failed", e);
     const env = device ? `\n\n**Environment:** ${device.device_model} · ${device.platform} ${device.os_version}` : "";
     return NextResponse.json({ body: `${description}${env}\n\n${SCREENSHOT_MARKER}`, aiError: "The AI couldn't draft the comment. Edit it before posting." });
   }

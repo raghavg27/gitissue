@@ -7,6 +7,7 @@ import { duplicateOptions } from "@/lib/duplicates";
 import { attachScreenshots } from "@/lib/issue-body";
 import { createClient } from "@/lib/supabase/server";
 import { validateIssue } from "@/lib/validation";
+import { logError } from "@/lib/log";
 
 type Action = "create" | "comment" | "reopen_comment" | "new_regression";
 const ACTIONS: Action[] = ["create", "comment", "reopen_comment", "new_regression"];
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
       reportTitle = issue.title;
     }
   } catch (e) {
-    console.error("post: GitHub write failed", e);
+    logError("post: GitHub write failed", e);
     return fail(502, "GitHub rejected the request. Your draft is still here, try again.");
   }
 
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest) {
     action: recorded,
     title: reportTitle,
   });
-  if (error) console.error("post: saving report history failed", error);
+  if (error) logError("post: saving report history failed", error);
   else revalidateTag(reportsTag(viewer.userId), { expire: 0 });
 
   return NextResponse.json({ url, number, action: recorded, reopenFailed });

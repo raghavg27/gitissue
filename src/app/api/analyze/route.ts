@@ -7,6 +7,7 @@ import { duplicateOptions, searchCandidates } from "@/lib/duplicates";
 import { extractKeywords } from "@/lib/keywords";
 import { validateText } from "@/lib/validation";
 import type { Draft, DuplicateMatch } from "@/lib/types";
+import { logError } from "@/lib/log";
 
 export const maxDuration = 60;
 
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     const raw = await generateJson(buildAnalyzePrompt({ description, device, ctx, candidates }));
     ({ draft, duplicates } = parseAnalyzeResponse(raw, ctx, candidates));
   } catch (e) {
-    console.error("analyze: AI failed", e);
+    logError("analyze: AI failed", e);
     draft = fallbackDraft(description, ctx.template);
     aiError = "The AI couldn't draft this one, so here's the repo's template with your description. Edit it and post.";
   }
