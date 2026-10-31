@@ -46,6 +46,9 @@ export function RepoPicker({ initialError = "" }: { initialError?: string }) {
             onChange={(e) => {
               setValue(e.target.value);
               setError("");
+              // Start loading the repo page as soon as the link is valid, so Open feels instant.
+              const ref = parseRepoUrl(e.target.value);
+              if (ref) router.prefetch(`/${ref.owner}/${ref.repo}`);
             }}
             placeholder="github.com/owner/repo"
             autoCapitalize="none"
