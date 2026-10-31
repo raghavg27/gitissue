@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Onest } from "next/font/google";
 import { HashFocus } from "@/components/HashFocus";
@@ -43,6 +45,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <PageRestore />
         <HashFocus />
         {children}
+        {/* Cookieless, and served from this site's own /_vercel path, so no cookie banner is needed. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
