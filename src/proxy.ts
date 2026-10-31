@@ -1,12 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { buildCsp } from "@/lib/csp";
 import { publicEnv } from "@/lib/env";
-import { DEVICE_COOKIE } from "@/lib/site";
+import { DEVICE_COOKIE, siteUrl } from "@/lib/site";
 
 const PRIVATE_PAGES = ["/reports", "/devices"];
 
-// Refreshes the Supabase session cookie on each request.
+// Refreshes the Supabase session cookie on each request, and sets a Content Security Policy
+// with a new nonce. Next.js reads the nonce from the request header and adds it to its scripts.
 export async function proxy(request: NextRequest) {
+  const nonce = btoa(crypto.randomUUID());
+  const csp = buildCsp({ nonce, dev: process.env.NODE_ENV === "development", supabaseUrl: publicEnv.supabaseUrl, appUrl: siteUrl() });
+  request.headers.set("x-nonce", nonce);
+  request.headers.set("Content-Security-Policy", csp);
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     publicEnv.supabaseUrl,
@@ -38,6 +44,7 @@ export async function proxy(request: NextRequest) {
       path: "/",
     });
   }
+  response.headers.set("Content-Security-Policy", csp);
   return response;
 }
 

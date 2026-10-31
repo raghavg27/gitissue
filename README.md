@@ -50,10 +50,10 @@ Read [SELF_HOSTING.md](SELF_HOSTING.md). It gives each setup step and each envir
 | `pnpm typecheck` | Runs TypeScript in strict mode. |
 | `pnpm test` | Runs the unit tests and the database smoke tests. |
 | `pnpm build` | Makes the production build. |
-| `pnpm test:e2e` | Runs the end-to-end and accessibility tests. |
+| `pnpm test:e2e` | Runs the end-to-end and accessibility tests. Run `pnpm build` first. |
 | `pnpm perf` | Runs the Lighthouse performance budget. Run `pnpm build` first. |
 
-CI runs lint, typecheck, tests and build on each push.
+CI runs lint, typecheck, tests, build and the end-to-end tests on each push.
 
 ## Help and support
 

@@ -100,6 +100,6 @@ pnpm lint        # ESLint
 pnpm typecheck   # TypeScript, strict mode
 pnpm test        # Unit tests and database smoke tests
 pnpm build       # Production build
-pnpm test:e2e    # End-to-end and accessibility tests (Playwright)
+pnpm test:e2e    # End-to-end and accessibility tests (Playwright), after pnpm build
 pnpm perf        # Lighthouse performance budget, after pnpm build
 ```

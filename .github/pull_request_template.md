@@ -8,7 +8,7 @@
 
 ## Checks
 
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` pass.
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build` and `pnpm test:e2e` pass.
 - [ ] I added or changed tests for the rules that I changed.
 - [ ] Text in the app uses simple English, with no contractions and no em dashes.
 - [ ] If this change sends data to a new outside service, I updated the privacy policy.
