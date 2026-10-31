@@ -4,17 +4,18 @@ import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore, useTransition } from "react";
 import { usePageRestore } from "@/hooks/usePageRestore";
 import { readRecentRepos } from "@/lib/recent-repos";
-import { parseRepoUrl } from "@/lib/repo-url";
+import { parseRepoUrl, REPO_URL_ERROR } from "@/lib/repo-url";
 import { ActionButton } from "./ActionButton";
 import { NavLink } from "./NavLink";
 
 const noSubscribe = () => () => {};
 const appHost = process.env.NEXT_PUBLIC_APP_URL && new URL(process.env.NEXT_PUBLIC_APP_URL).host;
 
-export function RepoPicker() {
+// Without JavaScript the form still works: it sends a GET to /open, which redirects to the repo.
+export function RepoPicker({ initialError = "" }: { initialError?: string }) {
   const router = useRouter();
   const [value, setValue] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(initialError);
   const [opening, startOpening] = useTransition();
   usePageRestore(() => setError(""));
   const recent = useSyncExternalStore(noSubscribe, () => readRecentRepos().join("\n"), () => "")
@@ -24,19 +25,23 @@ export function RepoPicker() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const ref = parseRepoUrl(value);
-    if (!ref) return setError("That doesn't look like a GitHub repo. Paste a link like github.com/owner/repo.");
+    if (!ref) return setError(REPO_URL_ERROR);
     startOpening(() => router.push(`/${ref.owner}/${ref.repo}`));
   }
 
   return (
     <div className="space-y-6">
-      <form onSubmit={submit} className="space-y-3">
+      <form action="/open" method="get" onSubmit={submit} className="space-y-3">
         <label htmlFor="repo" className="sr-only">
           Which repo are you testing?
         </label>
-        <div className="glass flex h-14 items-center rounded-full pr-1.5 pl-5 shadow-sm focus-within:border-white/40 sm:h-16 sm:pl-6">
+        <div className="glass flex h-14 items-center rounded-full pr-1.5 pl-5 shadow-sm focus-within:border-white/40 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-ink sm:h-16 sm:pl-6">
           <input
             id="repo"
+            name="repo"
+            required
+            aria-invalid={!!error || undefined}
+            aria-describedby={[error && "repo-error", appHost && "repo-hint"].filter(Boolean).join(" ") || undefined}
             value={value}
             onChange={(e) => {
               setValue(e.target.value);
@@ -52,9 +57,9 @@ export function RepoPicker() {
             Open repo
           </ActionButton>
         </div>
-        {error && <p className="text-sm text-rec">{error}</p>}
+        {error && <p id="repo-error" role="alert" className="text-sm text-rec">{error}</p>}
         {appHost && (
-          <p className="text-sm text-muted">
+          <p id="repo-hint" className="text-sm text-muted">
             Shortcut: on any GitHub repo page, replace <code className="text-ink">github.com</code> with{" "}
             <code className="whitespace-nowrap text-ink">{appHost}</code> in the address bar.
           </p>

@@ -1,5 +1,7 @@
 export type RepoRef = { owner: string; repo: string };
 
+export const REPO_URL_ERROR = "That is not a GitHub repo link. Paste a link such as github.com/owner/repo.";
+
 const OWNER = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/;
 const REPO = /^[A-Za-z0-9._-]{1,100}$/;
 

@@ -1,6 +1,7 @@
 import { Hero } from "@/components/Hero";
 import { RepoPicker } from "@/components/RepoPicker";
 import { getViewer } from "@/lib/github/client";
+import { REPO_URL_ERROR } from "@/lib/repo-url";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const viewer = await getViewer();
@@ -16,7 +17,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       {error === "auth" && (
         <p className="mb-4 rounded-2xl bg-warn-bg px-5 py-3 text-warn-ink">GitHub sign-in did not finish. Try again.</p>
       )}
-      <RepoPicker />
+      <RepoPicker initialError={error === "repo" ? REPO_URL_ERROR : ""} />
       {!viewer && (
         <p className="mt-6 text-sm text-muted">No account is needed to start. You sign in with GitHub when you are ready to draft.</p>
       )}
