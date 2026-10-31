@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Onest } from "next/font/google";
+import { HashFocus } from "@/components/HashFocus";
 import { PageRestore } from "@/components/PageRestore";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full font-sans">
         <SmoothScroll />
         <PageRestore />
+        <HashFocus />
         {children}
       </body>
     </html>
