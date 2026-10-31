@@ -168,8 +168,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           {privateShotsWarning}
           {repo.private && (
             <p className="text-sm text-muted">
-              Your description and excerpts of this private repo&apos;s code are sent to Google Gemini&apos;s free tier
-              to draft the issue.
+              Your description and excerpts of this private repo&apos;s code are sent to Groq, or to Google
+              Gemini&apos;s free tier as a backup, to draft the issue.
             </p>
           )}
           {errorBox}

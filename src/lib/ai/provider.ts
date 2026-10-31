@@ -3,6 +3,9 @@ import { GoogleGenAI } from "@google/genai";
 
 export class AiUnavailableError extends Error {}
 
+// Per provider, so a hung call still leaves time for the backup inside Vercel's 60 s limit.
+const TIMEOUT_MS = 20_000;
+
 function parseJson(text: string): unknown {
   return JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, ""));
 }
@@ -12,7 +15,7 @@ async function gemini(prompt: string): Promise<unknown> {
   const res = await ai.models.generateContent({
     model: process.env.GEMINI_MODEL || "gemini-3.8-flash",
     contents: prompt,
-    config: { responseMimeType: "application/json", temperature: 0.2 },
+    config: { responseMimeType: "application/json", temperature: 0.2, abortSignal: AbortSignal.timeout(TIMEOUT_MS) },
   });
   return parseJson(res.text ?? "");
 }
@@ -28,6 +31,7 @@ async function groq(prompt: string): Promise<unknown> {
       response_format: { type: "json_object" },
       temperature: 0.2,
     }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
   });
   if (!res.ok) throw new Error(`Groq ${res.status}`);
   const data = await res.json();
@@ -35,10 +39,11 @@ async function groq(prompt: string): Promise<unknown> {
 }
 
 // Single entry point for all AI calls, so the provider can be swapped (§10.2).
+// Groq first: it answers in about a second, while Gemini's free tier can hang for minutes.
 export async function generateJson(prompt: string): Promise<unknown> {
   const providers = [
-    process.env.GEMINI_API_KEY && gemini,
     process.env.GROQ_API_KEY && groq,
+    process.env.GEMINI_API_KEY && gemini,
   ].filter((p) => typeof p === "function");
   const errors: string[] = [];
   for (const provider of providers) {

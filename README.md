@@ -2,7 +2,7 @@
 
 Dictate a bug from your phone and get a GitHub issue that follows the repo's own template and contributing rules, uses the app's real screen names from its code, and lands on the existing issue when the bug is already reported.
 
-Built with Next.js, Supabase (Auth, Postgres, Storage), the GitHub REST API and Gemini's free tier.
+Built with Next.js, Supabase (Auth, Postgres, Storage), the GitHub REST API and Groq, with Gemini's free tier as a backup.
 
 ## Setup
 
@@ -15,7 +15,7 @@ Built with Next.js, Supabase (Auth, Postgres, Storage), the GitHub REST API and 
 2. **GitHub OAuth app** (GitHub → Settings → Developer settings → OAuth Apps). Use `https://<ref>.supabase.co/auth/v1/callback` as the callback URL.
 3. **Supabase Auth → Providers → GitHub.** Enable it and paste the OAuth app's client ID and secret. The app requests the `repo` scope itself.
 4. **Supabase Auth → URL Configuration.** Set the Site URL to your app URL and add `http://localhost:3000/**` and `https://<your-app>.vercel.app/**` to Redirect URLs.
-5. **Gemini key** from Google AI Studio. Optionally add a Groq key as a fallback.
+5. **Groq key** from the Groq console, and a **Gemini key** from Google AI Studio. The app uses Groq first and Gemini when Groq fails. Each call has a 20 second limit. You can set only one of the two keys.
 6. **Environment.** Copy `.env.example` to `.env.local` and fill it in. Generate `TOKEN_ENCRYPTION_KEY` with `openssl rand -base64 32`.
 
 ```bash
@@ -35,7 +35,7 @@ Import the repo into Vercel, add the same environment variables (set `NEXT_PUBLI
   - picks screen, route and navigation files from the tree using keywords from the dictation;
   - searches open and closed issues for duplicates.
 
-  One Gemini call then returns both the duplicate ranking and a draft. Screen names the model returns are kept only if they appear in the scanned code.
+  One AI call then returns both the duplicate ranking and a draft. Screen names the model returns are kept only if they appear in the scanned code.
 - When the tester confirms a duplicate, they comment on an open issue, or reopen and comment on a closed one if they have triage access or opened it. Otherwise they choose between commenting and filing a "possible regression" issue.
 - Nothing is written to GitHub until the tester taps Post. The GitHub token is stored AES-GCM-encrypted and is only readable with the service-role key on the server.
 

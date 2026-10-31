@@ -28,8 +28,9 @@ export function SignIn({ next = "/" }: { next?: string }) {
           issue templates and code, and to post the issue you approve. Nothing is posted until you tap Post.
         </p>
         <p>
-          Drafting runs on Google Gemini&apos;s free tier. Google may use what&apos;s sent, including your
-          description and excerpts of the repo&apos;s code, to improve its models.
+          Drafting runs on Groq, with Google Gemini&apos;s free tier as a backup when Groq fails. When Gemini
+          is used, Google may use what is sent, including your description and excerpts of the repo&apos;s code,
+          to improve its models.
         </p>
       </div>
     </div>
