@@ -1,7 +1,9 @@
+import "server-only";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { serverEnv } from "@/lib/env.server";
 
 function key(): Buffer {
-  const k = Buffer.from(process.env.TOKEN_ENCRYPTION_KEY ?? "", "base64");
+  const k = Buffer.from(serverEnv.tokenEncryptionKey, "base64");
   if (k.length !== 32) throw new Error("TOKEN_ENCRYPTION_KEY must be 32 bytes, base64-encoded");
   return k;
 }

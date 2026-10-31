@@ -1,5 +1,6 @@
 import "server-only";
 import { GoogleGenAI } from "@google/genai";
+import { serverEnv } from "@/lib/env.server";
 
 export class AiUnavailableError extends Error {}
 
@@ -11,9 +12,9 @@ function parseJson(text: string): unknown {
 }
 
 async function gemini(prompt: string): Promise<unknown> {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: serverEnv.geminiKey() });
   const res = await ai.models.generateContent({
-    model: process.env.GEMINI_MODEL || "gemini-3.8-flash",
+    model: serverEnv.geminiModel(),
     contents: prompt,
     config: { responseMimeType: "application/json", temperature: 0.2, abortSignal: AbortSignal.timeout(TIMEOUT_MS) },
   });
@@ -24,9 +25,9 @@ async function gemini(prompt: string): Promise<unknown> {
 async function groq(prompt: string): Promise<unknown> {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, "Content-Type": "application/json" },
+    headers: { Authorization: `Bearer ${serverEnv.groqKey()}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: process.env.GROQ_MODEL || "qwen/qwen3.8-27b",
+      model: serverEnv.groqModel(),
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -42,8 +43,8 @@ async function groq(prompt: string): Promise<unknown> {
 // Groq first: it answers in about a second, while Gemini's free tier can hang for minutes.
 export async function generateJson(prompt: string): Promise<unknown> {
   const providers = [
-    process.env.GROQ_API_KEY && groq,
-    process.env.GEMINI_API_KEY && gemini,
+    serverEnv.groqKey() && groq,
+    serverEnv.geminiKey() && gemini,
   ].filter((p) => typeof p === "function");
   const errors: string[] = [];
   for (const provider of providers) {

@@ -2,6 +2,7 @@ import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { fail, withRepo } from "@/lib/api";
 import { reportsTag } from "@/lib/data";
+import { publicEnv } from "@/lib/env";
 import { duplicateOptions } from "@/lib/duplicates";
 import { attachScreenshots } from "@/lib/issue-body";
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,7 @@ const MAX_SCREENSHOTS = 5;
 // Only images uploaded to our own public bucket get embedded.
 function validScreenshots(urls: unknown): string[] | null {
   if (urls === undefined) return [];
-  const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/screenshots/`;
+  const prefix = `${publicEnv.supabaseUrl}/storage/v1/object/public/screenshots/`;
   if (!Array.isArray(urls) || urls.length > MAX_SCREENSHOTS) return null;
   return urls.every((u) => typeof u === "string" && u.startsWith(prefix)) ? urls : null;
 }

@@ -1,9 +1,11 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import { publicEnv } from "@/lib/env";
+import { serverEnv } from "@/lib/env.server";
 
 // Service-role client: bypasses RLS. Server only, used for the encrypted GitHub token.
 export function createAdminClient() {
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+  return createClient(publicEnv.supabaseUrl, serverEnv.serviceRoleKey, {
     auth: { persistSession: false },
   });
 }
