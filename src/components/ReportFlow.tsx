@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { DupOption } from "@/lib/duplicates";
 import type { RepoAccess } from "@/lib/github/repo";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/drafts";
+import { plural } from "@/lib/format";
 import { rememberRepo } from "@/lib/recent-repos";
 import { LIMITS } from "@/lib/validation";
 import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
@@ -279,7 +280,10 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
         <>
           <div className="space-y-1">
             <h2 className="text-xl font-medium">This might already be reported</h2>
-            <p className="text-muted">If one of these is your bug, your findings go on that issue instead of a new one.</p>
+            <p className="text-muted">
+              GitIssue found {plural(analysis.duplicates.length, "possible match", "possible matches")}. If one is your bug,
+              your findings go on that issue instead of a new one.
+            </p>
           </div>
           <ul className="space-y-3">
             {analysis.duplicates.map((m) => (
@@ -472,7 +476,9 @@ function DraftReview({
       {aiError && <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{aiError}</p>}
       {draft.missingFields.length > 0 && (
         <div className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
-          <p className="font-medium">The repo asks for details you didn&apos;t mention</p>
+          <p className="font-medium">
+            The repo asks for {plural(draft.missingFields.length, "detail")} that you did not mention
+          </p>
           <ul className="mt-1 list-disc pl-5">
             {draft.missingFields.map((f) => <li key={f}>{f}</li>)}
           </ul>

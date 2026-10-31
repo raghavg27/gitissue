@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { plural } from "@/lib/format";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 const MAX_FILES = 5;
@@ -28,7 +29,7 @@ export function ScreenshotPicker({
     const tooBig = images.filter((f) => f.size > MAX_BYTES);
     if (tooBig.length) setError("Images must be 10 MB or smaller.");
     const ok = images.filter((f) => f.size <= MAX_BYTES).slice(0, Math.max(room, 0));
-    if (images.length - tooBig.length > room) setError(`You can attach up to ${MAX_FILES} screenshots.`);
+    if (images.length - tooBig.length > room) setError(`You can attach up to ${plural(MAX_FILES, "screenshot")}.`);
     if (!ok.length) return;
 
     setUploading((n) => n + ok.length);

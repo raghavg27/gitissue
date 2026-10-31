@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
+import { plural } from "@/lib/format";
 import { EmptyState } from "@/components/EmptyState";
 import { getViewer } from "@/lib/github/client";
 import { createClient } from "@/lib/supabase/server";
@@ -18,7 +19,10 @@ export default async function Reports() {
       <Backdrop />
       <AppHeader signedIn />
       <main className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
-        <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">My reports</h1>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">My reports</h1>
+          {!!reports?.length && <p className="text-muted">{plural(reports.length, "report")} from this account</p>}
+        </div>
         {!reports?.length ? (
           <EmptyState
             drawing="reports"
