@@ -3,7 +3,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
 import { Hero } from "@/components/Hero";
 import { ReportFlow } from "@/components/ReportFlow";
-import { SignIn } from "@/components/SignIn";
+import { DraftBeforeSignIn } from "@/components/DraftBeforeSignIn";
 import { getViewer } from "@/lib/github/client";
 import { getRepoAccess, type RepoAccess } from "@/lib/github/repo";
 import { createClient } from "@/lib/supabase/server";
@@ -18,10 +18,10 @@ export default async function RepoPage({ params }: PageProps<"/[owner]/[repo]/[[
       <Hero
         signedIn={false}
         badge={`${owner}/${repo}`}
-        title="Sign in to report a bug"
-        sub="GitIssue reads this repo's templates, contributing rules and code, so your report fits the way its maintainers work."
+        title="Describe the bug first"
+        sub="Write or say what went wrong. When you are ready, sign in with GitHub and GitIssue drafts an issue that fits this repo's templates and code."
       >
-        <SignIn next={`/${owner}/${repo}`} />
+        <DraftBeforeSignIn repo={`${owner}/${repo}`} />
       </Hero>
     );
   }

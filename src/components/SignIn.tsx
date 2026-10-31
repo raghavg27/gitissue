@@ -5,7 +5,7 @@ import { usePageRestore } from "@/hooks/usePageRestore";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { ActionButton } from "./ActionButton";
 
-export function SignIn({ next = "/" }: { next?: string }) {
+export function SignIn({ next = "/", label = "Continue with GitHub" }: { next?: string; label?: string }) {
   const [pending, setPending] = useState(false);
   usePageRestore(() => setPending(false));
 
@@ -23,7 +23,7 @@ export function SignIn({ next = "/" }: { next?: string }) {
   return (
     <div className="space-y-6">
       <ActionButton onClick={signIn} busy={pending} busyLabel="Opening GitHub…" className="pill h-14 w-full px-6 text-lg sm:h-16">
-        Continue with GitHub
+        {label}
       </ActionButton>
       <div className="space-y-3 text-sm leading-relaxed text-muted">
         <p>
