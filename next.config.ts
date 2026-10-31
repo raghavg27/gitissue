@@ -37,7 +37,11 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [{ source: "/settings", destination: "/devices", permanent: true }];
+    return [
+      { source: "/settings", destination: "/devices", permanent: true },
+      // The demo video is on YouTube. Not permanent, so browsers do not keep it if the video changes.
+      { source: "/demo", destination: "https://youtu.be/9vjFmfWYAlo", permanent: false },
+    ];
   },
 };
 

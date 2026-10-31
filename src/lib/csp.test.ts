@@ -22,10 +22,6 @@ describe("buildCsp", () => {
     expect(csp(false)).toContain("form-action 'self' https://app.example https://ref.supabase.co https://github.com;");
   });
 
-  it("allows frames only from YouTube's no-cookie domain", () => {
-    expect(csp(false)).toContain("frame-src https://www.youtube-nocookie.com;");
-  });
-
   it("adds unsafe-eval and drops the https upgrade in development", () => {
     expect(csp(true)).toContain("'strict-dynamic' 'unsafe-eval'");
     expect(csp(true)).not.toContain("upgrade-insecure-requests");

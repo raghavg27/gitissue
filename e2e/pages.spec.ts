@@ -61,3 +61,9 @@ test("/settings moves permanently to /devices", async ({ request }) => {
   expect(response.status()).toBe(308);
   expect(response.headers().location).toBe("/devices");
 });
+
+test("/demo goes to the demo video on YouTube", async ({ request }) => {
+  const response = await request.get("/demo", { maxRedirects: 0 });
+  expect(response.status()).toBe(307);
+  expect(response.headers().location).toBe("https://youtu.be/9vjFmfWYAlo");
+});

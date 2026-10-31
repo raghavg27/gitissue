@@ -14,8 +14,6 @@ export function buildCsp({ nonce, dev, supabaseUrl, appUrl }: { nonce: string; d
     // canvas-confetti draws in a worker made from a blob URL.
     "worker-src 'self' blob:",
     "manifest-src 'self'",
-    // The demo page plays its video from YouTube's no-cookie domain.
-    "frame-src https://www.youtube-nocookie.com",
     "object-src 'none'",
     "base-uri 'self'",
     // Sign-in posts here, then redirects through Supabase and GitHub back to the app's callback URL.
