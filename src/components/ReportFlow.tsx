@@ -12,7 +12,7 @@ import { ActionButton } from "./ActionButton";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { DevicePicker } from "./DevicePicker";
 import { ExternalLink } from "./ExternalLink";
-import { MicButton } from "./MicButton";
+import { MicButton, useSpeechSupported } from "./MicButton";
 import { ScreenshotPicker, type Shot } from "./ScreenshotPicker";
 import { Spinner } from "./Spinner";
 
@@ -80,6 +80,30 @@ function BottomBar({ children, shortcut = false }: { children: React.ReactNode; 
   );
 }
 
+// A numbered step on the describe screen. Step 1 labels the text box; steps 2 and 3 are section headings.
+function StepHeading({ n, title, optional = false, htmlFor, id }: { n: number; title: string; optional?: boolean; htmlFor?: string; id?: string }) {
+  const content = (
+    <>
+      <span aria-hidden className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-line text-sm text-muted">
+        {n}
+      </span>
+      <span>
+        <span className="sr-only">Step {n}: </span>
+        {title}
+      </span>
+      {optional && (
+        <span className="rounded-full bg-card px-2.5 py-0.5 text-xs font-normal text-muted">Optional but recommended</span>
+      )}
+    </>
+  );
+  const style = "flex flex-wrap items-center gap-x-2.5 gap-y-1 text-lg font-medium";
+  return htmlFor ? (
+    <label htmlFor={htmlFor} className={style}>{content}</label>
+  ) : (
+    <h2 id={id} className={style}>{content}</h2>
+  );
+}
+
 const SHORTCUT = "Meta+Enter Control+Enter";
 
 const primary = "pill h-14 flex-1 px-6 text-lg";
@@ -96,6 +120,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   const [busy, setBusy] = useState<string | null>(null);
   const [step, setStep] = useState(0);
 
+  const speech = useSpeechSupported();
   const [restored, setRestored] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
@@ -249,25 +274,39 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
 
       {stage.name === "describe" && (
         <>
-          <div className="space-y-2">
-            <label htmlFor="description" className="block font-medium">What went wrong?</label>
-            <div className="flex items-start gap-3">
-              <textarea
-                id="description"
-                maxLength={LIMITS.description.max}
-                aria-describedby="description-count"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={7}
-                placeholder="Say it the way you would tell the developer: what you did, what you expected, what happened instead."
-                className="glass min-w-0 flex-1 rounded-3xl px-5 py-4 text-lg leading-relaxed"
-              />
-              <MicButton onText={(t) => setDescription((d) => appendText(d, t))} />
+          <div className="space-y-8">
+            <div className="space-y-3">
+              <StepHeading n={1} title="Describe the bug" htmlFor="description" />
+              <div className="flex items-start gap-3">
+                <textarea
+                  id="description"
+                  maxLength={LIMITS.description.max}
+                  aria-describedby="dictation-tip description-count"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={7}
+                  placeholder="Say it the way you would tell the developer: what you did, what you expected, what happened instead."
+                  className="glass min-w-0 flex-1 rounded-3xl px-5 py-4 text-lg leading-relaxed"
+                />
+                <MicButton onText={(t) => setDescription((d) => appendText(d, t))} />
+              </div>
+              <p id="dictation-tip" className="text-sm text-muted">
+                Tip: dictate with{" "}
+                <ExternalLink href="https://wisprflow.ai" className="text-ink underline underline-offset-4">Wispr Flow</ExternalLink>{" "}
+                for the cleanest text, {speech ? "or tap the mic to talk here" : "or use the dictation key on your keyboard"}.
+                Talking is faster than typing.
+              </p>
+              <CharCount id="description-count" value={description} max={LIMITS.description.max} />
             </div>
-            <CharCount id="description-count" value={description} max={LIMITS.description.max} />
+            <section aria-labelledby="step-2" className="space-y-3">
+              <StepHeading n={2} title="Add screenshots" optional id="step-2" />
+              <ScreenshotPicker shots={shots} onChange={setShots} />
+            </section>
+            <section aria-labelledby="step-3" className="space-y-3">
+              <StepHeading n={3} title="Add device details" optional id="step-3" />
+              <DevicePicker devices={devices} value={deviceId} onChange={setDeviceId} />
+            </section>
           </div>
-          <DevicePicker devices={devices} value={deviceId} onChange={setDeviceId} />
-          <ScreenshotPicker shots={shots} onChange={setShots} />
           {privateShotsWarning}
           {repo.private && (
             <p className="text-sm text-muted">

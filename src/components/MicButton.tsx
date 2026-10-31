@@ -20,9 +20,14 @@ function getRecognition(): (new () => Recognition) | undefined {
 
 const noSubscribe = () => () => {};
 
+// True when this browser can dictate in the page. False on the server and in browsers without the API.
+export function useSpeechSupported() {
+  return useSyncExternalStore(noSubscribe, () => !!getRecognition(), () => false);
+}
+
 // In-app dictation via the Web Speech API (FR-13). Hidden where unsupported; the text box + Wispr Flow still works.
 export function MicButton({ onText, size = "lg" }: { onText: (text: string) => void; size?: "lg" | "sm" }) {
-  const supported = useSyncExternalStore(noSubscribe, () => !!getRecognition(), () => false);
+  const supported = useSpeechSupported();
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState("");
   const rec = useRef<Recognition | null>(null);
