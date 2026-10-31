@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { DupOption } from "@/lib/duplicates";
 import type { RepoAccess } from "@/lib/github/repo";
+import { clearDraft, loadDraft, saveDraft } from "@/lib/drafts";
 import { rememberRepo } from "@/lib/recent-repos";
 import { LIMITS } from "@/lib/validation";
 import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
@@ -24,6 +25,9 @@ type Stage =
   | { name: "review"; regressionOf?: number }
   | { name: "comment"; match: Match; action: CommentAction; body: string; aiError?: string }
   | { name: "posted"; url: string; number: number; action: string; reopenFailed: boolean };
+
+// What is kept on the device between visits. A draft that was still analyzing goes back to the describe step.
+type SavedDraft = { description: string; shots: Shot[]; analysis: Analysis | null; stage: Stage };
 
 const ANALYZE_STEPS = [
   "Reading issue templates and contributing rules",
@@ -73,7 +77,30 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   const [busy, setBusy] = useState<string | null>(null);
   const [step, setStep] = useState(0);
 
+  const [restored, setRestored] = useState(false);
+
   useEffect(() => rememberRepo(repo.fullName), [repo.fullName]);
+
+  // Restores after hydration, because the server cannot read this device's storage.
+  useEffect(() => {
+    const saved = loadDraft<SavedDraft>(repo.fullName);
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time read of device storage after hydration */
+    if (typeof saved.description === "string") setDescription(saved.description);
+    if (Array.isArray(saved.shots)) setShots(saved.shots);
+    if (saved.analysis) {
+      setAnalysis(saved.analysis);
+      if (saved.stage && ["duplicates", "choose", "review", "comment"].includes(saved.stage.name)) setStage(saved.stage);
+    }
+    setRestored(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [repo.fullName]);
+
+  useEffect(() => {
+    if (!restored) return;
+    if (stage.name === "posted") return clearDraft(repo.fullName);
+    const kept = stage.name === "analyzing" ? { name: "describe" as const } : stage;
+    saveDraft(repo.fullName, { description, shots, analysis, stage: kept } satisfies SavedDraft);
+  }, [restored, repo.fullName, description, shots, analysis, stage]);
 
   useEffect(() => {
     if (stage.name !== "analyzing") return;
@@ -138,6 +165,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   }
 
   function reset() {
+    clearDraft(repo.fullName);
     setDescription("");
     setShots([]);
     setAnalysis(null);
