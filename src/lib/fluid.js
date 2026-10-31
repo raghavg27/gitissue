@@ -1150,13 +1150,14 @@ export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
     };
 
     function generateColor() {
-        // Ember band: deep rose → red → orange → amber. Slightly dimmed so dense
-        // ink stays orange instead of washing out to yellow-white.
-        const h = (0.96 + Math.random() * 0.16) % 1;
-        let c = HSVtoRGB(h, 0.92, 1.0);
-        c.r *= 0.85;
-        c.g *= 0.85;
-        c.b *= 0.85;
+        // Ember band: crimson → red → red-orange. Warm hues look far brighter than
+        // blue ones, so the ink is dimmed hard; dense ink stays orange instead of
+        // washing out to yellow-white.
+        const h = (0.95 + Math.random() * 0.1) % 1;
+        let c = HSVtoRGB(h, 1.0, 1.0);
+        c.r *= 0.35;
+        c.g *= 0.35;
+        c.b *= 0.35;
         return c;
     }
 
