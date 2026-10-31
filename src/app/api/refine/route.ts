@@ -24,6 +24,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ draft: parseDraft(raw, ctx) });
   } catch (e) {
     logError("refine: AI failed", e);
-    return fail(503, "The AI couldn't refine the draft. Edit it directly instead.");
+    return fail(503, "The AI could not change the draft. Edit the title and body yourself, or try again in a minute.");
   }
 }

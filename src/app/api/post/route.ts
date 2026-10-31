@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (e) {
     logError("post: GitHub write failed", e);
-    return fail(502, "GitHub rejected the request. Your draft is still here, try again.");
+    return fail(502, "GitHub did not accept the post. Your draft is saved. Check that you can still open the repo, then try again.");
   }
 
   const supabase = await createClient();

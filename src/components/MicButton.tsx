@@ -43,7 +43,7 @@ export function MicButton({ onText, size = "lg" }: { onText: (text: string) => v
     };
     r.onend = () => setRecording(false);
     r.onerror = (e) =>
-      setError(e.error === "not-allowed" ? "Microphone access is blocked. Allow it in the browser settings." : "");
+      setError(e.error === "not-allowed" ? "The browser blocks the microphone. Allow it in the site settings, or type instead." : "");
     rec.current = r;
     setError("");
     r.start();

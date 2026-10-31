@@ -40,9 +40,11 @@ const ANALYZE_STEPS = [
 ];
 
 async function api<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const res = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).catch(() => {
+    throw new Error("Could not reach GitIssue. Check your internet and try again.");
+  });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error ?? "Something went wrong. Try again.");
+  if (!res.ok) throw new Error(data.error ?? "GitIssue could not finish this step. Your text is saved. Try again in a minute.");
   return data;
 }
 
@@ -257,7 +259,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={7}
-                placeholder="Say it the way you'd tell the developer: what you did, what you expected, what happened instead."
+                placeholder="Say it the way you would tell the developer: what you did, what you expected, what happened instead."
                 className="glass min-w-0 flex-1 rounded-3xl px-5 py-4 text-lg leading-relaxed"
               />
               <MicButton onText={(t) => setDescription((d) => appendText(d, t))} />
@@ -327,7 +329,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           {errorBox}
           <BottomBar>
             <button onClick={() => setStage({ name: "review" })} disabled={!!busy} className={primary}>
-              It&apos;s a different bug
+              It is a different bug
             </button>
           </BottomBar>
         </>
@@ -337,7 +339,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
         <>
           <div className="space-y-1">
             <h2 className="text-xl font-medium">#{stage.match.number} is closed</h2>
-            <p className="text-muted">You can&apos;t reopen it on this repo. How should this report go in?</p>
+            <p className="text-muted">You cannot reopen it on this repo. How should this report go in?</p>
           </div>
           <div className="space-y-3">
             <button
@@ -437,7 +439,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           </ExternalLink>
           {stage.reopenFailed && (
             <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
-              GitHub didn&apos;t let you reopen this issue, so it stays closed. Your comment was posted.
+              GitHub did not let you reopen this issue, so it stays closed. Your comment was posted.
             </p>
           )}
           <BottomBar>

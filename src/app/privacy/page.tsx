@@ -28,7 +28,7 @@ export default function Privacy() {
         <ul>
           <li><strong>Your GitHub account ID and user name</strong>, to know who is signed in.</li>
           <li><strong>Your GitHub access token</strong>, encrypted with AES-256-GCM, to read repos and post the issues that you approve. Sign-out deletes it.</li>
-          <li><strong>Your device profiles</strong> (device name, platform, OS and app version), until you delete them.</li>
+          <li><strong>Your saved devices</strong> (device name, platform, OS and app version), until you delete them.</li>
           <li><strong>A list of your reports</strong> (repo, issue number, link, title and date), to show My reports.</li>
           <li><strong>Screenshots that you add.</strong> They are stored at a long random address that anyone with the link can open, because GitHub must load them in the issue.</li>
           <li><strong>Rate-limit counters.</strong> Your IP address, a random device ID and your account ID are hashed with a secret key before they are stored. The hashes are deleted within one day.</li>
@@ -56,7 +56,7 @@ export default function Privacy() {
         <h2>Your choices</h2>
         <ul>
           <li>Sign out to delete your stored GitHub token.</li>
-          <li>Delete device profiles on the Devices page.</li>
+          <li>Delete saved devices on the Devices page.</li>
           <li>Revoke GitIssue in GitHub, under Settings, Applications.</li>
           <li>To delete all your data, send a private request through <ExternalLink href={SECURITY_URL}>GitHub private reporting</ExternalLink>.</li>
         </ul>

@@ -13,12 +13,12 @@ export async function withRepo(
   repo: unknown,
 ): Promise<{ viewer: Viewer; access: RepoAccess } | { response: NextResponse }> {
   const viewer = await getViewer();
-  if (!viewer) return { response: fail(401, "Sign in with GitHub first.") };
-  if (typeof owner !== "string" || typeof repo !== "string") return { response: fail(400, "Missing repository.") };
+  if (!viewer) return { response: fail(401, "Your session ended. Sign in with GitHub again; your draft is saved.") };
+  if (typeof owner !== "string" || typeof repo !== "string") return { response: fail(400, "Open a repo first. Go to the home page and paste its link.") };
   try {
     return { viewer, access: await getRepoAccess(viewer.octokit, owner, repo) };
   } catch {
-    return { response: fail(404, `Can't access ${owner}/${repo}. Check the URL and that your GitHub account can see it.`) };
+    return { response: fail(404, `Could not open ${owner}/${repo}. Check the link, and check that your GitHub account can see the repo.`) };
   }
 }
 

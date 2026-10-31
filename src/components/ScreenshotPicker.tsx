@@ -25,9 +25,9 @@ export function ScreenshotPicker({
     setError("");
     const room = MAX_FILES - shots.length - uploading;
     const images = files.filter((f) => f.type.startsWith("image/"));
-    if (images.length < files.length) setError("Only images can be attached.");
+    if (images.length < files.length) setError("Only images can be added. Pick a PNG, JPEG, GIF or WebP file.");
     const tooBig = images.filter((f) => f.size > MAX_BYTES);
-    if (tooBig.length) setError("Images must be 10 MB or smaller.");
+    if (tooBig.length) setError("Each image can be up to 10 MB. Make it smaller, or take a new screenshot.");
     const ok = images.filter((f) => f.size <= MAX_BYTES).slice(0, Math.max(room, 0));
     if (images.length - tooBig.length > room) setError(`You can attach up to ${plural(MAX_FILES, "screenshot")}.`);
     if (!ok.length) return;
@@ -44,7 +44,7 @@ export function ScreenshotPicker({
       }),
     );
     setUploading((n) => n - ok.length);
-    if (uploaded.includes(null)) setError("Some screenshots didn't upload. Try them again.");
+    if (uploaded.includes(null)) setError("Some screenshots did not upload. Check your internet and add them again.");
     onChange((prev) => [...prev, ...uploaded.filter((s) => s !== null)]);
   }
 

@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     logError("analyze: AI failed", e);
     draft = fallbackDraft(description, ctx.template);
-    aiError = "The AI couldn't draft this one, so here's the repo's template with your description. Edit it and post.";
+    aiError = "The AI could not draft this issue, so the draft holds the repo's template and your description. Edit it, then post.";
   }
 
   return NextResponse.json({

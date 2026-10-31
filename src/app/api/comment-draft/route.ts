@@ -41,6 +41,6 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     logError("comment-draft: AI failed", e);
     const env = device ? `\n\n**Environment:** ${device.device_model} · ${device.platform} ${device.os_version}` : "";
-    return NextResponse.json({ body: `${description}${env}\n\n${SCREENSHOT_MARKER}`, aiError: "The AI couldn't draft the comment. Edit it before posting." });
+    return NextResponse.json({ body: `${description}${env}\n\n${SCREENSHOT_MARKER}`, aiError: "The AI could not draft the comment, so it holds your description. Edit it before you post." });
   }
 }

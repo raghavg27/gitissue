@@ -27,7 +27,7 @@ export const FEATURES = [
     why: "A bug that comes back gets attention in the correct place, with its history.",
   },
   {
-    name: "Device profiles",
+    name: "Saved devices",
     what: "Save the phones and browsers you test on, and pick one for each report.",
     why: "The device and OS version are the details that bug reports most often forget.",
   },
@@ -78,7 +78,7 @@ export const FAQ = [
   },
   {
     q: "What does GitIssue keep about me?",
-    a: "Your GitHub user name, an encrypted GitHub token, your device profiles and a list of your reports. The privacy policy lists each service that receives data.",
+    a: "Your GitHub user name, an encrypted GitHub token, your saved devices and a list of your reports. The privacy policy lists each service that receives data.",
   },
   {
     q: "Is GitIssue free and open source?",
