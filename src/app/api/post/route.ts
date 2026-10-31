@@ -3,6 +3,7 @@ import { fail, withRepo } from "@/lib/api";
 import { duplicateOptions } from "@/lib/duplicates";
 import { attachScreenshots } from "@/lib/issue-body";
 import { createClient } from "@/lib/supabase/server";
+import { validateIssue } from "@/lib/validation";
 
 type Action = "create" | "comment" | "reopen_comment" | "new_regression";
 const ACTIONS: Action[] = ["create", "comment", "reopen_comment", "new_regression"];
@@ -18,13 +19,16 @@ function validScreenshots(urls: unknown): string[] | null {
 
 // The only place that writes to GitHub; called after the tester taps Post on the preview.
 export async function POST(request: NextRequest) {
-  const { owner, repo, action, title, body, labels, issueNumber, screenshots } = await request.json();
+  const { owner, repo, action, issueNumber, screenshots, ...draft } = await request.json();
   const urls = validScreenshots(screenshots);
-  if (!ACTIONS.includes(action) || typeof body !== "string" || !urls) return fail(400, "Invalid request.");
+  if (!ACTIONS.includes(action)) return fail(400, "Pick what to post: an issue or a comment.");
+  if (!urls) return fail(400, "Some screenshots are not from this app. Remove them and add them again.");
   const isNewIssue = action === "create" || action === "new_regression";
-  if (isNewIssue && (typeof title !== "string" || !title.trim())) return fail(400, "The issue needs a title.");
+  const checked = validateIssue(draft, { needsTitle: isNewIssue });
+  if (!checked.ok) return fail(400, checked.error);
+  const { title, body, labels } = checked.value;
   if (!isNewIssue || action === "new_regression") {
-    if (typeof issueNumber !== "number") return fail(400, "Missing issue number.");
+    if (!Number.isSafeInteger(issueNumber) || issueNumber < 1) return fail(400, "Pick the issue to comment on.");
   }
 
   const result = await withRepo(owner, repo);
@@ -46,7 +50,7 @@ export async function POST(request: NextRequest) {
         ...base,
         title,
         body: action === "new_regression" ? `Possible regression of #${issueNumber}\n\n${fullBody}` : fullBody,
-        labels: Array.isArray(labels) ? labels.filter((l) => typeof l === "string") : undefined,
+        labels: labels.length ? labels : undefined,
       });
       url = data.html_url;
       number = data.number;

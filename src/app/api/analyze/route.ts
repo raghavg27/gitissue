@@ -5,13 +5,16 @@ import { fail, loadDevice, withRepo } from "@/lib/api";
 import { gatherContext } from "@/lib/context/gather";
 import { duplicateOptions, searchCandidates } from "@/lib/duplicates";
 import { extractKeywords } from "@/lib/keywords";
+import { validateText } from "@/lib/validation";
 import type { Draft, DuplicateMatch } from "@/lib/types";
 
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const { owner, repo, description, deviceId } = await request.json();
-  if (typeof description !== "string" || !description.trim()) return fail(400, "Describe the bug first.");
+  const { owner, repo, description: rawDescription, deviceId } = await request.json();
+  const checked = validateText(rawDescription, "description");
+  if (!checked.ok) return fail(400, checked.error);
+  const description = checked.value;
   const result = await withRepo(owner, repo);
   if ("response" in result) return result.response;
   const { viewer, access } = result;

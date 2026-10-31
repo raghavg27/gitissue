@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { DupOption } from "@/lib/duplicates";
 import type { RepoAccess } from "@/lib/github/repo";
 import { rememberRepo } from "@/lib/recent-repos";
+import { LIMITS } from "@/lib/validation";
 import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
 import { ActionButton } from "./ActionButton";
 import { DevicePicker } from "./DevicePicker";
@@ -39,6 +40,16 @@ async function api<T>(path: string, body: unknown): Promise<T> {
 }
 
 const appendText = (prev: string, text: string) => (prev.trim() ? `${prev.trimEnd()} ${text}` : text);
+
+// Shows the count only near the limit, so it helps without adding noise.
+function CharCount({ id, value, max }: { id: string; value: string; max: number }) {
+  const near = value.length > max * 0.8;
+  return (
+    <p id={id} className={`text-sm ${value.length > max ? "text-rec" : "text-muted"} ${near ? "" : "sr-only"}`}>
+      {value.length.toLocaleString("en-US")} of {max.toLocaleString("en-US")} characters
+    </p>
+  );
+}
 
 function BottomBar({ children }: { children: React.ReactNode }) {
   return (
@@ -157,6 +168,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             <div className="flex items-start gap-3">
               <textarea
                 id="description"
+                maxLength={LIMITS.description.max}
+                aria-describedby="description-count"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={7}
@@ -165,6 +178,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
               />
               <MicButton onText={(t) => setDescription((d) => appendText(d, t))} />
             </div>
+            <CharCount id="description-count" value={description} max={LIMITS.description.max} />
           </div>
           <DevicePicker devices={devices} value={deviceId} onChange={setDeviceId} />
           <ScreenshotPicker shots={shots} onChange={setShots} />
@@ -308,6 +322,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           <label htmlFor="comment" className="sr-only">Comment</label>
           <textarea
             id="comment"
+            maxLength={LIMITS.body.max}
             value={stage.body}
             onChange={(e) => setStage({ ...stage, body: e.target.value })}
             rows={12}
@@ -420,6 +435,7 @@ function DraftReview({
         <label htmlFor="title" className="block font-medium">Title</label>
         <input
           id="title"
+          maxLength={LIMITS.title.max}
           value={draft.title}
           onChange={(e) => onDraft({ ...draft, title: e.target.value })}
           className="glass h-14 w-full rounded-full px-5 text-lg font-medium"
@@ -429,6 +445,7 @@ function DraftReview({
         <label htmlFor="body" className="block font-medium">Body</label>
         <textarea
           id="body"
+          maxLength={LIMITS.body.max}
           value={draft.body}
           onChange={(e) => onDraft({ ...draft, body: e.target.value })}
           rows={16}
@@ -455,6 +472,7 @@ function DraftReview({
         <div className="flex items-center gap-2">
           <input
             id="refine"
+            maxLength={LIMITS.instruction.max}
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
             placeholder="e.g. add that it only happens on slow network"

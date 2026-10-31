@@ -3,12 +3,16 @@ import { buildCommentPrompt, parseComment } from "@/lib/ai/draft";
 import { generateJson } from "@/lib/ai/provider";
 import { fail, loadDevice, withRepo } from "@/lib/api";
 import { SCREENSHOT_MARKER } from "@/lib/issue-body";
+import { validateText } from "@/lib/validation";
 
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const { owner, repo, issueNumber, description, deviceId } = await request.json();
-  if (typeof issueNumber !== "number" || typeof description !== "string") return fail(400, "Missing issue or description.");
+  const { owner, repo, issueNumber, description: rawDescription, deviceId } = await request.json();
+  if (!Number.isSafeInteger(issueNumber) || issueNumber < 1) return fail(400, "Pick the issue to comment on.");
+  const checked = validateText(rawDescription, "description");
+  if (!checked.ok) return fail(400, checked.error);
+  const description = checked.value;
   const result = await withRepo(owner, repo);
   if ("response" in result) return result.response;
   const { viewer, access } = result;
