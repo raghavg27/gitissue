@@ -27,12 +27,15 @@ export function Hero({
   title,
   sub,
   children,
+  below,
 }: {
   signedIn: boolean;
   badge: string;
   title: string;
   sub: string;
   children: React.ReactNode;
+  // Sections under the first screen, such as the home page story.
+  below?: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-svh flex-col">
@@ -57,6 +60,7 @@ export function Hero({
           </div>
         </div>
       </main>
+      {below}
       <footer
         className="reveal px-5 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-8"
         style={{ "--delay": "1650ms" } as Vars}

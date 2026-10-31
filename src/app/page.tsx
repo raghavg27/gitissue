@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/Hero";
+import { HomeSections } from "@/components/HomeSections";
 import { JsonLd } from "@/components/JsonLd";
 import { RepoPicker } from "@/components/RepoPicker";
 import { getViewer } from "@/lib/github/client";
@@ -26,6 +27,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     <Hero
       signedIn={!!viewer}
       badge="For testers on any GitHub repo"
+      below={<HomeSections />}
       title="Say the bug out loud"
       sub="Turn 30 seconds of talking into a bug report developers can fix right away. GitIssue follows the repo's template, names the real screens and adds to an existing issue when one is already open."
     >
