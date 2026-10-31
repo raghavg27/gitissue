@@ -1,4 +1,5 @@
 import type { Octokit } from "@octokit/rest";
+import { cache } from "react";
 
 export type RepoAccess = {
   owner: string;
@@ -21,6 +22,9 @@ export async function getRepoAccess(octokit: Octokit, owner: string, repo: strin
     canTriage: data.permissions?.triage === true || data.permissions?.push === true,
   };
 }
+
+// One GitHub call per request, shared by the repo layout and page.
+export const loadRepoAccess = cache(getRepoAccess);
 
 export async function getFileText(octokit: Octokit, access: RepoAccess, path: string): Promise<string> {
   const { data } = await octokit.repos.getContent({
