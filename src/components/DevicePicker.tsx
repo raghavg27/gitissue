@@ -53,7 +53,7 @@ export function DevicePicker({
         id="device"
         value={value}
         onChange={(e) => (e.target.value === "__add" ? setAdding(true) : select(e.target.value))}
-        className="min-w-0 flex-1 rounded-lg border border-line bg-card px-3 py-2"
+        className="glass h-11 min-w-0 flex-1 rounded-full px-4"
       >
         <option value="">No device profile</option>
         {devices.map((d) => (

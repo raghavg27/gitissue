@@ -40,14 +40,14 @@ const appendText = (prev: string, text: string) => (prev.trim() ? `${prev.trimEn
 
 function BottomBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 border-t border-line bg-paper/95 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-xl gap-2 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{children}</div>
     </div>
   );
 }
 
-const primary = "flex-1 rounded-xl bg-ink px-5 py-4 text-lg font-bold text-paper disabled:opacity-50";
-const secondary = "rounded-xl border border-line px-5 py-4 font-bold";
+const primary = "pill h-14 flex-1 px-6 text-lg";
+const secondary = "glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-14 px-6";
 
 export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: DeviceProfile[] }) {
   const [stage, setStage] = useState<Stage>({ name: "describe" });
@@ -131,7 +131,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     setStage({ name: "describe" });
   }
 
-  const errorBox = error && <p role="alert" className="rounded-xl bg-warn-bg p-4 text-warn-ink">{error}</p>;
+  const errorBox = error && <p role="alert" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{error}</p>;
   const privateShotsWarning = repo.private && shots.length > 0 && (
     <p className="text-sm text-muted">
       This repo is private, but screenshot links are public: anyone who has the link can open the image.
@@ -141,8 +141,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   return (
     <div className="space-y-5 pb-32">
       <div className="flex items-baseline justify-between gap-3">
-        <h1 className="min-w-0 truncate font-display text-2xl font-bold">{repo.fullName}</h1>
-        <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs text-muted">
+        <h1 className="min-w-0 truncate text-2xl font-medium tracking-tight sm:text-3xl">{repo.fullName}</h1>
+        <span className="glass shrink-0 rounded-full px-3 py-1 text-xs text-muted">
           {repo.private ? "Private" : "Public"}
         </span>
       </div>
@@ -150,7 +150,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       {stage.name === "describe" && (
         <>
           <div className="space-y-2">
-            <label htmlFor="description" className="block font-bold">What went wrong?</label>
+            <label htmlFor="description" className="block font-medium">What went wrong?</label>
             <div className="flex items-start gap-3">
               <textarea
                 id="description"
@@ -158,7 +158,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
                 onChange={(e) => setDescription(e.target.value)}
                 rows={7}
                 placeholder="Say it the way you'd tell the developer: what you did, what you expected, what happened instead."
-                className="min-w-0 flex-1 rounded-xl border border-line bg-card px-4 py-3 text-lg leading-relaxed"
+                className="glass min-w-0 flex-1 rounded-3xl px-5 py-4 text-lg leading-relaxed"
               />
               <MicButton onText={(t) => setDescription((d) => appendText(d, t))} />
             </div>
@@ -180,7 +180,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       )}
 
       {stage.name === "analyzing" && (
-        <ol className="space-y-3 pt-4" aria-live="polite">
+        <ol className="glass space-y-4 rounded-3xl p-6" aria-live="polite">
           {ANALYZE_STEPS.map((s, i) => (
             <li key={s} className={i <= step ? "text-ink" : "text-muted/50"}>
               <span className={`mr-2 inline-block h-2 w-2 rounded-full ${i < step ? "bg-ok" : i === step ? "animate-pulse bg-ink" : "bg-line"}`} />
@@ -193,14 +193,14 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       {stage.name === "duplicates" && analysis && (
         <>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold">This might already be reported</h2>
+            <h2 className="text-xl font-medium">This might already be reported</h2>
             <p className="text-muted">If one of these is your bug, your findings go on that issue instead of a new one.</p>
           </div>
           <ul className="space-y-3">
             {analysis.duplicates.map((m) => (
-              <li key={m.number} className="space-y-3 rounded-xl border border-line bg-card p-4">
+              <li key={m.number} className="glass space-y-3 rounded-3xl p-5">
                 <div className="space-y-1">
-                  <a href={m.url} target="_blank" rel="noreferrer" className="font-bold underline-offset-2 hover:underline">
+                  <a href={m.url} target="_blank" rel="noreferrer" className="font-medium underline-offset-2 hover:underline">
                     #{m.number} {m.title}
                   </a>
                   <p className="text-sm">
@@ -208,7 +208,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
                     <span className="text-muted">. {m.reason}</span>
                   </p>
                 </div>
-                <button onClick={() => sameBug(m)} disabled={busy} className="w-full rounded-lg border border-ink px-4 py-2 font-bold disabled:opacity-50">
+                <button onClick={() => sameBug(m)} disabled={busy} className="glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-11 w-full px-5">
                   This is my bug
                 </button>
               </li>
@@ -226,16 +226,16 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       {stage.name === "choose" && (
         <>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold">#{stage.match.number} is closed</h2>
+            <h2 className="text-xl font-medium">#{stage.match.number} is closed</h2>
             <p className="text-muted">You can&apos;t reopen it on this repo. How should this report go in?</p>
           </div>
           <div className="space-y-3">
-            <button onClick={() => openComment(stage.match, "comment")} disabled={busy} className="w-full rounded-xl border border-line bg-card p-4 text-left disabled:opacity-50">
-              <span className="block font-bold">Comment on #{stage.match.number}</span>
+            <button onClick={() => openComment(stage.match, "comment")} disabled={busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
+              <span className="block font-medium">Comment on #{stage.match.number}</span>
               <span className="text-sm text-muted">Maintainers watching it get notified.</span>
             </button>
-            <button onClick={() => setStage({ name: "review", regressionOf: stage.match.number })} disabled={busy} className="w-full rounded-xl border border-line bg-card p-4 text-left disabled:opacity-50">
-              <span className="block font-bold">New issue as a possible regression</span>
+            <button onClick={() => setStage({ name: "review", regressionOf: stage.match.number })} disabled={busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
+              <span className="block font-medium">New issue as a possible regression</span>
               <span className="text-sm text-muted">Opens a fresh issue that links back to #{stage.match.number}.</span>
             </button>
           </div>
@@ -280,19 +280,19 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       {stage.name === "comment" && (
         <>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-medium">
               {stage.action === "reopen_comment" ? "Reopen" : "Comment on"} #{stage.match.number}
             </h2>
             <p className="text-muted">{stage.match.title}</p>
           </div>
-          {stage.aiError && <p className="rounded-xl bg-warn-bg p-4 text-warn-ink">{stage.aiError}</p>}
+          {stage.aiError && <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{stage.aiError}</p>}
           <label htmlFor="comment" className="sr-only">Comment</label>
           <textarea
             id="comment"
             value={stage.body}
             onChange={(e) => setStage({ ...stage, body: e.target.value })}
             rows={12}
-            className="w-full rounded-xl border border-line bg-card px-4 py-3 leading-relaxed"
+            className="glass w-full rounded-3xl px-5 py-4 leading-relaxed"
           />
           {shots.length > 0 && <ScreenshotPicker shots={shots} onChange={setShots} />}
           {privateShotsWarning}
@@ -312,14 +312,14 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
 
       {stage.name === "posted" && (
         <div className="space-y-4 pt-4">
-          <h2 className="font-display text-3xl font-bold">
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
             {stage.action === "created" ? "Issue created" : stage.action === "reopened" ? "Issue reopened" : "Comment posted"}
           </h2>
-          <a href={stage.url} target="_blank" rel="noreferrer" className="block text-lg font-bold underline underline-offset-4">
+          <a href={stage.url} target="_blank" rel="noreferrer" className="block text-lg font-medium underline underline-offset-4">
             {repo.fullName}#{stage.number}
           </a>
           {stage.reopenFailed && (
-            <p className="rounded-xl bg-warn-bg p-4 text-warn-ink">
+            <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
               GitHub didn&apos;t let you reopen this issue, so it stays closed. Your comment was posted.
             </p>
           )}
@@ -371,10 +371,10 @@ function DraftReview({
 
   return (
     <>
-      {aiError && <p className="rounded-xl bg-warn-bg p-4 text-warn-ink">{aiError}</p>}
+      {aiError && <p className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{aiError}</p>}
       {draft.missingFields.length > 0 && (
-        <div className="rounded-xl bg-warn-bg p-4 text-warn-ink">
-          <p className="font-bold">The repo asks for details you didn&apos;t mention</p>
+        <div className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
+          <p className="font-medium">The repo asks for details you didn&apos;t mention</p>
           <ul className="mt-1 list-disc pl-5">
             {draft.missingFields.map((f) => <li key={f}>{f}</li>)}
           </ul>
@@ -396,22 +396,22 @@ function DraftReview({
         <p className="text-sm text-muted">The issue will start with &ldquo;Possible regression of #{regressionOf}&rdquo;.</p>
       )}
       <div className="space-y-2">
-        <label htmlFor="title" className="block font-bold">Title</label>
+        <label htmlFor="title" className="block font-medium">Title</label>
         <input
           id="title"
           value={draft.title}
           onChange={(e) => onDraft({ ...draft, title: e.target.value })}
-          className="w-full rounded-xl border border-line bg-card px-4 py-3 text-lg font-bold"
+          className="glass h-14 w-full rounded-full px-5 text-lg font-medium"
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="body" className="block font-bold">Body</label>
+        <label htmlFor="body" className="block font-medium">Body</label>
         <textarea
           id="body"
           value={draft.body}
           onChange={(e) => onDraft({ ...draft, body: e.target.value })}
           rows={16}
-          className="w-full rounded-xl border border-line bg-card px-4 py-3 leading-relaxed"
+          className="glass w-full rounded-3xl px-5 py-4 leading-relaxed"
         />
       </div>
       {draft.labels.length > 0 && (
@@ -422,7 +422,7 @@ function DraftReview({
               key={l}
               onClick={() => onDraft({ ...draft, labels: draft.labels.filter((x) => x !== l) })}
               aria-label={`Remove label ${l}`}
-              className="rounded-full border border-line px-3 py-1"
+              className="glass rounded-full px-3 py-1 transition-colors hover:border-white/40"
             >
               {l} ×
             </button>
@@ -430,17 +430,17 @@ function DraftReview({
         </div>
       )}
       <div className="space-y-2">
-        <label htmlFor="refine" className="block font-bold">Change something</label>
+        <label htmlFor="refine" className="block font-medium">Change something</label>
         <div className="flex items-center gap-2">
           <input
             id="refine"
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
             placeholder="e.g. add that it only happens on slow network"
-            className="min-w-0 flex-1 rounded-xl border border-line bg-card px-4 py-3"
+            className="glass h-12 min-w-0 flex-1 rounded-full px-5"
           />
           <MicButton size="sm" onText={(t) => setInstruction((s) => appendText(s, t))} />
-          <button onClick={refine} disabled={refining || !instruction.trim()} className="rounded-xl border border-ink px-4 py-3 font-bold disabled:opacity-50">
+          <button onClick={refine} disabled={refining || !instruction.trim()} className="glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-12 px-5">
             {refining ? "Updating…" : "Apply"}
           </button>
         </div>

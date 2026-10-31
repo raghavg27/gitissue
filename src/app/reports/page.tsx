@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
+import { Backdrop } from "@/components/Backdrop";
 import { getViewer } from "@/lib/github/client";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,19 +14,20 @@ export default async function Reports() {
 
   return (
     <>
+      <Backdrop />
       <AppHeader signedIn />
-      <main className="mx-auto w-full max-w-xl space-y-6 px-4 pt-6 pb-16">
-        <h1 className="font-display text-3xl font-bold">My reports</h1>
+      <main className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
+        <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">My reports</h1>
         {!reports?.length ? (
           <p className="text-muted">
-            Nothing reported yet. <Link href="/" className="font-bold text-ink underline">Pick a repo</Link> to file your first bug.
+            Nothing reported yet. <Link href="/" className="font-medium text-ink underline underline-offset-4">Pick a repo</Link> to file your first bug.
           </p>
         ) : (
-          <ul className="divide-y divide-line rounded-xl border border-line bg-card">
+          <ul className="glass divide-y divide-line overflow-hidden rounded-3xl">
             {reports.map((r) => (
               <li key={r.id}>
-                <a href={r.issue_url} target="_blank" rel="noreferrer" className="block space-y-1 px-4 py-3">
-                  <p className="font-bold">{r.title}</p>
+                <a href={r.issue_url} target="_blank" rel="noreferrer" className="block space-y-1 px-5 py-4 transition-colors hover:bg-white/5">
+                  <p className="font-medium">{r.title}</p>
                   <p className="text-sm text-muted">
                     {ACTION_TEXT[r.action as keyof typeof ACTION_TEXT]} {r.repo_full_name}#{r.issue_number},{" "}
                     {new Date(r.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}

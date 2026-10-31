@@ -17,11 +17,11 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
   return (
     <div className="space-y-4">
       {devices.length > 0 && (
-        <ul className="divide-y divide-line rounded-xl border border-line bg-card">
+        <ul className="glass divide-y divide-line overflow-hidden rounded-3xl">
           {devices.map((d) => (
-            <li key={d.id} className="flex items-center justify-between gap-3 px-4 py-3">
+            <li key={d.id} className="flex items-center justify-between gap-3 px-5 py-4">
               <div>
-                <p className="font-bold">{d.device_model}</p>
+                <p className="font-medium">{d.device_model}</p>
                 <p className="text-sm text-muted">
                   {d.platform} {d.os_version}
                   {d.app_version && `, app ${d.app_version}`}
@@ -35,7 +35,7 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
       {adding ? (
         <DeviceForm onSaved={(d) => { setDevices([...devices, d]); setAdding(false); }} onCancel={() => setAdding(false)} />
       ) : (
-        <button onClick={() => setAdding(true)} className="w-full rounded-xl border border-dashed border-line px-4 py-3 font-bold">
+        <button onClick={() => setAdding(true)} className="h-12 w-full rounded-full border border-dashed border-white/25 px-5 font-medium text-muted transition-colors hover:border-white/50 hover:text-ink">
           Add a device
         </button>
       )}

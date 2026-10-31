@@ -59,8 +59,8 @@ export function MicButton({ onText, size = "lg" }: { onText: (text: string) => v
         onClick={toggle}
         aria-pressed={recording}
         aria-label={recording ? "Stop recording" : "Dictate"}
-        className={`${dim} flex shrink-0 items-center justify-center rounded-full text-paper ${
-          recording ? "animate-pulse bg-rec" : "bg-ink"
+        className={`${dim} flex shrink-0 items-center justify-center rounded-full transition-colors ${
+          recording ? "animate-pulse bg-rec text-paper" : "bg-pill text-pill-ink hover:bg-white/85"
         }`}
       >
         {recording ? (
@@ -71,7 +71,7 @@ export function MicButton({ onText, size = "lg" }: { onText: (text: string) => v
           </svg>
         )}
       </button>
-      {recording && <span className="text-xs font-bold text-rec">Listening</span>}
+      {recording && <span className="text-xs font-medium text-rec">Listening</span>}
       {error && <span className="text-xs text-rec">{error}</span>}
     </div>
   );

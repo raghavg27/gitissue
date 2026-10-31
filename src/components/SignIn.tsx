@@ -19,11 +19,7 @@ export function SignIn({ next = "/" }: { next?: string }) {
 
   return (
     <div className="space-y-6">
-      <button
-        onClick={signIn}
-        disabled={pending}
-        className="w-full rounded-xl bg-ink px-5 py-4 text-lg font-bold text-paper disabled:opacity-60"
-      >
+      <button onClick={signIn} disabled={pending} className="pill h-14 w-full px-6 text-lg sm:h-16">
         {pending ? "Opening GitHub…" : "Continue with GitHub"}
       </button>
       <div className="space-y-3 text-sm leading-relaxed text-muted">

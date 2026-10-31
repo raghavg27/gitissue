@@ -1,28 +1,25 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
 :root {
-  --paper: #edf1f5;
-  --card: #ffffff;
-  --ink: #12263a;
-  --muted: #566677;
-  --line: #cbd5e0;
-  --marker: #ffe14d;
-  --rec: #d93a3f;
-  --ok: #1d7f67;
-  --warn-bg: #fff3d1;
-  --warn-ink: #7a4f00;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #0f1b27;
-    --card: #172636;
-    --ink: #e6edf3;
-    --muted: #97a8b9;
-    --line: #2b3d50;
-    --warn-bg: #3a2d0c;
-    --warn-ink: #ffd67a;
-  }
+  color-scheme: dark;
+  --paper: #04050c;
+  --card: rgba(255, 255, 255, 0.08);
+  --ink: #eef0f6;
+  --muted: #b9becf;
+  --line: rgba(255, 255, 255, 0.16);
+  --pill: #ffffff;
+  --pill-ink: #2f2f33;
+  --marker: #9cecff;
+  --rec: #ff6b7d;
+  --ok: #5fe3b8;
+  --warn-bg: rgba(255, 200, 90, 0.12);
+  --warn-ink: #ffd98a;
+  --scrim: rgba(4, 5, 12, 0.46);
+  --scrim-strong: rgba(4, 5, 12, 0.68);
+  --scrim-soft: rgba(4, 5, 12, 0.12);
+  --ease-entrance: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 @theme inline {
@@ -31,13 +28,14 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-pill: var(--pill);
+  --color-pill-ink: var(--pill-ink);
   --color-marker: var(--marker);
   --color-rec: var(--rec);
   --color-ok: var(--ok);
   --color-warn-bg: var(--warn-bg);
   --color-warn-ink: var(--warn-ink);
   --font-sans: var(--font-body);
-  --font-display: var(--font-display);
 }
 
 body {
@@ -45,10 +43,85 @@ body {
   color: var(--ink);
 }
 
+::selection {
+  background: rgba(140, 120, 255, 0.45);
+}
+
+::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+/* Frosted panel that lets the ink show through. */
+@utility glass {
+  border: 1px solid var(--line);
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Solid white pill for the one main action on a screen. */
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--pill);
+  color: var(--pill-ink);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 150ms var(--ease-entrance);
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.85);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px rgba(255, 255, 255, 0.7);
+  }
+  &:disabled {
+    opacity: 0.45;
+  }
+}
+
+/* Darkens the centre of the live fluid so the heading stays readable. */
+.scrim {
+  background: radial-gradient(
+    115% 95% at 50% 46%,
+    var(--scrim-strong) 0%,
+    var(--scrim-strong) 24%,
+    var(--scrim) 52%,
+    var(--scrim-soft) 100%
+  );
+}
+
+/* Working screens: an even, darker veil so forms read cleanly. */
+.scrim-calm {
+  background: linear-gradient(var(--scrim-strong), var(--scrim) 70%, var(--scrim-strong));
+}
+
+/* Page-load entrance. Set --delay (and --rise or --dur) inline. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rise, 1.25rem));
+  }
+}
+
+.reveal {
+  animation: rise var(--dur, 700ms) var(--ease-entrance) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.reveal-word {
+  display: inline-block;
+  animation: rise var(--dur) var(--ease-out-cubic) both;
+  animation-delay: var(--delay);
+}
+
 /* Highlighter stroke for screen names verified against the code. */
 .marker {
   background: linear-gradient(transparent 8%, var(--marker) 8%, var(--marker) 94%, transparent 94%);
-  color: #12263a;
+  color: #04050c;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
   padding: 0.05em 0.3em;

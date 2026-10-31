@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import type { DeviceProfile } from "@/lib/types";
 
-const input = "w-full rounded-lg border border-line bg-card px-3 py-2";
+const input = "glass h-11 w-full rounded-full px-4";
 
 export function DeviceForm({ onSaved, onCancel }: { onSaved: (d: DeviceProfile) => void; onCancel?: () => void }) {
   const [form, setForm] = useState({ device_model: "", platform: "Android", os_version: "", app_version: "" });
@@ -33,7 +33,7 @@ export function DeviceForm({ onSaved, onCancel }: { onSaved: (d: DeviceProfile) 
   }
 
   return (
-    <form onSubmit={save} className="space-y-3 rounded-xl border border-line bg-card p-4">
+    <form onSubmit={save} className="glass space-y-3 rounded-3xl p-5">
       <input required placeholder="Device, e.g. Pixel 7" value={form.device_model} onChange={set("device_model")} className={input} />
       <div className="flex gap-2">
         <select value={form.platform} onChange={set("platform")} className={input}>
@@ -46,11 +46,11 @@ export function DeviceForm({ onSaved, onCancel }: { onSaved: (d: DeviceProfile) 
       <input placeholder="App version (optional)" value={form.app_version} onChange={set("app_version")} className={input} />
       {error && <p className="text-sm text-rec">{error}</p>}
       <div className="flex gap-2">
-        <button disabled={saving} className="flex-1 rounded-lg bg-ink px-4 py-2 font-bold text-paper disabled:opacity-60">
+        <button disabled={saving} className="pill h-11 flex-1 px-5">
           Save device
         </button>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="rounded-lg px-4 py-2 text-muted">
+          <button type="button" onClick={onCancel} className="rounded-full px-5 text-muted transition-colors hover:text-ink">
             Cancel
           </button>
         )}

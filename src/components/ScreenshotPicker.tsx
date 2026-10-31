@@ -62,25 +62,25 @@ export function ScreenshotPicker({
         {shots.map((s) => (
           <div key={s.url} className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s.url} alt={s.name} className="h-20 w-20 rounded-lg border border-line object-cover" />
+            <img src={s.url} alt={s.name} className="h-20 w-20 rounded-2xl border border-line object-cover" />
             <button
               type="button"
               onClick={() => onChange((prev) => prev.filter((x) => x.url !== s.url))}
               aria-label={`Remove ${s.name}`}
-              className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-ink text-sm text-paper"
+              className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-pill text-sm text-pill-ink"
             >
               ×
             </button>
           </div>
         ))}
         {Array.from({ length: uploading }, (_, i) => (
-          <div key={i} className="h-20 w-20 animate-pulse rounded-lg bg-line" />
+          <div key={i} className="h-20 w-20 animate-pulse rounded-2xl bg-line" />
         ))}
         {shots.length + uploading < MAX_FILES && (
           <button
             type="button"
             onClick={() => input.current?.click()}
-            className="h-20 rounded-lg border border-dashed border-line px-4 text-sm text-muted"
+            className="h-20 rounded-2xl border border-dashed border-white/25 px-5 text-sm text-muted transition-colors hover:border-white/50 hover:text-ink"
           >
             Add screenshot
           </button>
