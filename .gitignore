@@ -15,3 +15,7 @@ next-env.d.ts
 coverage/
 supabase/.temp/
 .lighthouseci/
+
+# Playwright
+/test-results/
+/playwright-report/
