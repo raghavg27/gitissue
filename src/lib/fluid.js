@@ -1,6 +1,6 @@
 // WebGL fluid simulation by Pavel Dobryakov (MIT), tuned for an oily ink-in-water look.
 // Changes from the original: tuned config, load burst, ember palette (rose to amber), an auto-cursor
-// that orbits the centre, a calm mode for working screens and a still frame for reduced motion.
+// that traces a figure eight through the centre, a calm mode for working screens and a still frame for reduced motion.
 // Returns a destroy function. Throws when WebGL is not available.
 export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
     canvas.width = canvas.clientWidth;
@@ -762,7 +762,7 @@ export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
     let virtualColor = null;
     let lastVColorTime = 0;
     const engineStart = Date.now();
-    const ORBIT_RADIUS = 300;      // px — the auto-cursor circles the centre at this radius
+    const ORBIT_RADIUS = 300;      // px — base size of the auto-cursor's figure eight
     const ORBIT_SPEED = calm ? 0.012 : 0.026; // rad/frame (~4 s per loop, ~9 s when calm)
     const ORBIT_START_DELAY = calm ? 0 : 700; // ms after load before the auto-cursor begins (burst plays first)
     const ORBIT_INK = calm ? 1.4 : 3.2;
@@ -787,8 +787,8 @@ export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
         rafHandle = requestAnimationFrame(update);
     }
 
-    // An invisible auto-cursor orbits the centre FOREVER, independent of the real
-    // pointer, splatting bright ink along a gently breathing orbit. Starts a beat
+    // An invisible auto-cursor traces a figure eight FOREVER, independent of the real
+    // pointer, splatting bright ink along a gently breathing path. Starts a beat
     // after load so the burst plays first.
     function driveVirtualPointer() {
         if (Date.now() - engineStart < ORBIT_START_DELAY)
@@ -796,10 +796,13 @@ export function fluidSimulation(canvas, { calm = false, still = false } = {}) {
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
         const base = Math.min(ORBIT_RADIUS, canvas.width * 0.35, canvas.height * 0.35);
-        const r = base * (0.72 + 0.28 * Math.sin(orbitAngle * 0.37));
+        const breath = 0.72 + 0.28 * Math.sin(orbitAngle * 0.37);
+        const ax = Math.min(base * 1.25, canvas.width * 0.4) * breath; // wide loops
+        const ay = base * 0.9 * breath;
         orbitAngle += ORBIT_SPEED;
-        const x = cx + Math.cos(orbitAngle) * r;
-        const y = cy + Math.sin(orbitAngle) * r;
+        // Lemniscate of Gerono: a sideways figure eight crossing the centre.
+        const x = cx + Math.sin(orbitAngle) * ax;
+        const y = cy + Math.sin(orbitAngle) * Math.cos(orbitAngle) * ay;
         if (!virtualSeeded) {
             virtualSeeded = true;
             vPrevX = x;
