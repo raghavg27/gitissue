@@ -51,6 +51,20 @@ export function validateIssue(
   return { ok: true, value: { title: title.value, body: body.value, labels } };
 }
 
+export const IMAGE_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/gif": "gif", "image/webp": "webp" } as const;
+export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+export const MAX_SCREENSHOTS = 5;
+
+// Screenshots: only common image types, up to 10 MB. Returns the file extension to store.
+export function validateImage(input: { type?: unknown; size?: unknown }): Result<string> {
+  const ext = IMAGE_TYPES[input.type as keyof typeof IMAGE_TYPES];
+  if (!ext) return { ok: false, error: "Only images can be added. Pick a PNG, JPEG, GIF or WebP file." };
+  if (typeof input.size !== "number" || input.size <= 0 || input.size > MAX_IMAGE_BYTES) {
+    return { ok: false, error: "Each image can be up to 10 MB. Make it smaller, or take a new screenshot." };
+  }
+  return { ok: true, value: ext };
+}
+
 export type DeviceInput = { device_model?: unknown; platform?: unknown; os_version?: unknown; app_version?: unknown };
 export type DeviceErrors = Partial<Record<"device_model" | "platform" | "os_version" | "app_version", string>>;
 

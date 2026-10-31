@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { plural } from "@/lib/format";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { IMAGE_TYPES, MAX_SCREENSHOTS, validateImage } from "@/lib/validation";
 
-const MAX_FILES = 5;
-const MAX_BYTES = 10 * 1024 * 1024;
 
 export type Shot = { url: string; name: string };
 
@@ -23,28 +22,40 @@ export function ScreenshotPicker({
 
   async function add(files: File[]) {
     setError("");
-    const room = MAX_FILES - shots.length - uploading;
-    const images = files.filter((f) => f.type.startsWith("image/"));
-    if (images.length < files.length) setError("Only images can be added. Pick a PNG, JPEG, GIF or WebP file.");
-    const tooBig = images.filter((f) => f.size > MAX_BYTES);
-    if (tooBig.length) setError("Each image can be up to 10 MB. Make it smaller, or take a new screenshot.");
-    const ok = images.filter((f) => f.size <= MAX_BYTES).slice(0, Math.max(room, 0));
-    if (images.length - tooBig.length > room) setError(`You can attach up to ${plural(MAX_FILES, "screenshot")}.`);
+    const room = MAX_SCREENSHOTS - shots.length - uploading;
+    // The same rule as the server, for a fast hint.
+    const rejected = files.map((f) => validateImage(f)).find((r) => !r.ok);
+    if (rejected && !rejected.ok) setError(rejected.error);
+    const valid = files.filter((f) => validateImage(f).ok);
+    const ok = valid.slice(0, Math.max(room, 0));
+    if (valid.length > room) setError(`You can attach up to ${plural(MAX_SCREENSHOTS, "screenshot")}.`);
     if (!ok.length) return;
 
     setUploading((n) => n + ok.length);
     const storage = createBrowserSupabase().storage.from("screenshots");
     const uploaded = await Promise.all(
       ok.map(async (file) => {
-        const ext = (file.name.split(".").pop() || file.type.split("/")[1] || "png").toLowerCase();
-        const path = `${crypto.randomUUID()}/${crypto.randomUUID()}.${ext}`;
-        const { error } = await storage.upload(path, file, { contentType: file.type });
-        if (error) return null;
-        return { url: storage.getPublicUrl(path).data.publicUrl, name: file.name };
+        try {
+          // The server checks the file and signs a one-time upload address for it.
+          const res = await fetch("/api/screenshots", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: file.type, size: file.size }),
+          });
+          const signed = await res.json();
+          if (!res.ok) {
+            setError(signed.error);
+            return null;
+          }
+          const { error } = await storage.uploadToSignedUrl(signed.path, signed.token, file, { contentType: file.type });
+          return error ? null : { url: signed.url as string, name: file.name };
+        } catch {
+          return null;
+        }
       }),
     );
     setUploading((n) => n - ok.length);
-    if (uploaded.includes(null)) setError("Some screenshots did not upload. Check your internet and add them again.");
+    if (uploaded.includes(null)) setError((e) => e || "Some screenshots did not upload. Check your internet and add them again.");
     onChange((prev) => [...prev, ...uploaded.filter((s) => s !== null)]);
   }
 
@@ -77,7 +88,7 @@ export function ScreenshotPicker({
         {Array.from({ length: uploading }, (_, i) => (
           <div key={i} role="status" aria-busy="true" aria-label="Uploading screenshot" className="h-20 w-20 animate-pulse rounded-2xl bg-line" />
         ))}
-        {shots.length + uploading < MAX_FILES && (
+        {shots.length + uploading < MAX_SCREENSHOTS && (
           <button
             type="button"
             onClick={() => input.current?.click()}
@@ -90,7 +101,7 @@ export function ScreenshotPicker({
       <input
         ref={input}
         type="file"
-        accept="image/*"
+        accept={Object.keys(IMAGE_TYPES).join(",")}
         multiple
         hidden
         onChange={(e) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanText, LIMITS, validateDevice, validateIssue, validateText } from "./validation";
+import { cleanText, LIMITS, MAX_IMAGE_BYTES, validateDevice, validateImage, validateIssue, validateText } from "./validation";
 
 describe("cleanText", () => {
   it("removes control characters but keeps new lines and tabs", () => {
@@ -48,6 +48,24 @@ describe("validateIssue", () => {
   it("rejects too many labels", () => {
     const labels = Array.from({ length: LIMITS.labels + 1 }, (_, i) => `l${i}`);
     expect(validateIssue({ title: "t", body: "b", labels })).toEqual({ ok: false, error: "An issue can have up to 10 labels." });
+  });
+});
+
+describe("validateImage", () => {
+  it("accepts common image types and gives the extension", () => {
+    expect(validateImage({ type: "image/jpeg", size: 1000 })).toEqual({ ok: true, value: "jpg" });
+  });
+
+  it.each([
+    [{ type: "image/svg+xml", size: 1000 }, "Only images"],
+    [{ type: "text/html", size: 1000 }, "Only images"],
+    [{ type: "image/png", size: MAX_IMAGE_BYTES + 1 }, "up to 10 MB"],
+    [{ type: "image/png", size: 0 }, "up to 10 MB"],
+    [{ type: "image/png" }, "up to 10 MB"],
+  ])("rejects %o", (input, text) => {
+    const result = validateImage(input);
+    expect(result.ok).toBe(false);
+    expect(!result.ok && result.error).toContain(text);
   });
 });
 

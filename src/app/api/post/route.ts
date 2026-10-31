@@ -6,12 +6,11 @@ import { publicEnv } from "@/lib/env";
 import { duplicateOptions } from "@/lib/duplicates";
 import { attachScreenshots } from "@/lib/issue-body";
 import { createClient } from "@/lib/supabase/server";
-import { validateIssue } from "@/lib/validation";
+import { MAX_SCREENSHOTS, validateIssue } from "@/lib/validation";
 import { logError } from "@/lib/log";
 
 type Action = "create" | "comment" | "reopen_comment" | "new_regression";
 const ACTIONS: Action[] = ["create", "comment", "reopen_comment", "new_regression"];
-const MAX_SCREENSHOTS = 5;
 
 // Only images uploaded to our own public bucket get embedded.
 function validScreenshots(urls: unknown): string[] | null {
