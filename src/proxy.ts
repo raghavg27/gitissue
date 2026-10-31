@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PRIVATE_PAGES = ["/reports", "/settings"];
+
 // Refreshes the Supabase session cookie on each request.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -19,7 +21,11 @@ export async function proxy(request: NextRequest) {
       },
     },
   );
-  await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+  // Signed-in pages redirect here, before their loading skeleton starts the stream and fixes the status at 200.
+  if (!data.user && PRIVATE_PAGES.some((p) => request.nextUrl.pathname.startsWith(p))) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
   return response;
 }
 

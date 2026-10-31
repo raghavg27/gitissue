@@ -74,7 +74,7 @@ export function ScreenshotPicker({
           </div>
         ))}
         {Array.from({ length: uploading }, (_, i) => (
-          <div key={i} className="h-20 w-20 animate-pulse rounded-2xl bg-line" />
+          <div key={i} role="status" aria-busy="true" aria-label="Uploading screenshot" className="h-20 w-20 animate-pulse rounded-2xl bg-line" />
         ))}
         {shots.length + uploading < MAX_FILES && (
           <button
