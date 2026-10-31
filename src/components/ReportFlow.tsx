@@ -11,6 +11,7 @@ import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
 import { ActionButton } from "./ActionButton";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { DevicePicker } from "./DevicePicker";
+import { ExternalLink } from "./ExternalLink";
 import { MicButton } from "./MicButton";
 import { ScreenshotPicker, type Shot } from "./ScreenshotPicker";
 import { Spinner } from "./Spinner";
@@ -303,9 +304,9 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             {analysis.duplicates.map((m) => (
               <li key={m.number} className="glass space-y-3 rounded-3xl p-5">
                 <div className="space-y-1">
-                  <a href={m.url} target="_blank" rel="noreferrer" className="line-clamp-2 font-medium underline-offset-2 hover:underline">
+                  <ExternalLink href={m.url} className="line-clamp-2 font-medium underline-offset-2 hover:underline">
                     #{m.number} {m.title}
-                  </a>
+                  </ExternalLink>
                   <p className="text-sm">
                     <span className={m.state === "open" ? "text-ok" : "text-muted"}>{m.state === "open" ? "Open" : "Closed"}</span>
                     <span className="text-muted">. {m.reason}</span>
@@ -431,9 +432,9 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           <h2 role="status" className="text-3xl font-medium tracking-tight sm:text-4xl">
             {stage.action === "created" ? "Issue created" : stage.action === "reopened" ? "Issue reopened" : "Comment posted"}
           </h2>
-          <a href={stage.url} target="_blank" rel="noreferrer" className="block truncate text-lg font-medium underline underline-offset-4">
+          <ExternalLink href={stage.url} className="block truncate text-lg font-medium underline underline-offset-4">
             {repo.fullName}#{stage.number}
-          </a>
+          </ExternalLink>
           {stage.reopenFailed && (
             <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
               GitHub didn&apos;t let you reopen this issue, so it stays closed. Your comment was posted.

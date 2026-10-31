@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
 import { EmptyState } from "@/components/EmptyState";
+import { ExternalLink } from "@/components/ExternalLink";
 import { plural } from "@/lib/format";
 import { pageInfo } from "@/lib/pagination";
 import { pageMetadata } from "@/lib/seo";
@@ -48,13 +49,13 @@ export default async function Reports({ searchParams }: PageProps<"/reports">) {
           <ul className="glass divide-y divide-line overflow-hidden rounded-3xl">
             {reports.map((r) => (
               <li key={r.id}>
-                <a href={r.issue_url} target="_blank" rel="noreferrer" className="block space-y-1 px-5 py-4 transition-colors hover:bg-white/5">
+                <ExternalLink href={r.issue_url} className="block space-y-1 px-5 py-4 transition-colors hover:bg-white/5">
                   <p className="truncate font-medium">{r.title}</p>
                   <p className="truncate text-sm text-muted">
                     {ACTION_TEXT[r.action as keyof typeof ACTION_TEXT]} {r.repo_full_name}#{r.issue_number},{" "}
                     {new Date(r.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
                   </p>
-                </a>
+                </ExternalLink>
               </li>
             ))}
           </ul>
