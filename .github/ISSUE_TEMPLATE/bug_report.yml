@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in GitIssue does not work.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Write what you did, what you expected, and what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to show the bug
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: For example, Pixel 7, Android 15, Chrome 140
+    validations:
+      required: true
+  - type: input
+    id: repo
+    attributes:
+      label: Repo you reported on (if public)
+      placeholder: owner/repo
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Paste images here. Remove private data first.
