@@ -62,10 +62,19 @@ export function RepoPicker({ initialError = "" }: { initialError?: string }) {
         </div>
         {error && <p id="repo-error" role="alert" className="text-sm text-rec">{error}</p>}
         {appHost && (
-          <p id="repo-hint" className="text-sm text-muted">
-            Shortcut: on any GitHub repo page, replace <code className="text-ink">github.com</code> with{" "}
-            <code className="whitespace-nowrap text-ink">{appHost}</code> in the address bar.
-          </p>
+          <div id="repo-hint" className="space-y-1.5 text-sm text-muted">
+            <p>Already on a GitHub repo? Change the start of its link to open it here.</p>
+            <p className="flex flex-wrap items-center justify-center gap-x-2 font-mono text-xs sm:text-sm">
+              <span>
+                <s className="opacity-70">github.com</s>/owner/repo
+              </span>
+              <span aria-hidden>→</span>
+              <span className="sr-only">becomes</span>
+              <span>
+                <span className="text-ink">{appHost}</span>/owner/repo
+              </span>
+            </p>
+          </div>
         )}
       </form>
       {recent.length > 0 && (
