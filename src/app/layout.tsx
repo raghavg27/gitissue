@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
+import { connection } from "next/server";
 import { Onest } from "next/font/google";
 import { HashFocus } from "@/components/HashFocus";
 import { PageRestore } from "@/components/PageRestore";
@@ -31,7 +32,9 @@ export const viewport: Viewport = {
   themeColor: "#04050c",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Each page is rendered per request, so its scripts carry that request's CSP nonce.
+  await connection();
   return (
     <html lang="en" className={`${body.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
