@@ -61,13 +61,20 @@ function CharCount({ id, value, max }: { id: string; value: string; max: number 
   );
 }
 
-function BottomBar({ children }: { children: React.ReactNode }) {
+function BottomBar({ children, shortcut = false }: { children: React.ReactNode; shortcut?: boolean }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-xl gap-2 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{children}</div>
+      {shortcut && (
+        <p className="-mt-1 hidden pb-2 text-center text-xs text-muted sm:block">
+          Press <kbd className="font-sans">⌘</kbd> or <kbd className="font-sans">Ctrl</kbd> + <kbd className="font-sans">Enter</kbd>
+        </p>
+      )}
     </div>
   );
 }
+
+const SHORTCUT = "Meta+Enter Control+Enter";
 
 const primary = "pill h-14 flex-1 px-6 text-lg";
 const secondary = "glass rounded-full font-medium transition-colors hover:border-white/40 disabled:opacity-50 h-14 px-6";
@@ -171,6 +178,32 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     }
   }
 
+  const postIssue = (regressionOf?: number) =>
+    analysis &&
+    post({
+      action: regressionOf ? "new_regression" : "create",
+      issueNumber: regressionOf,
+      title: analysis.draft.title,
+      body: analysis.draft.body,
+      labels: analysis.draft.labels,
+    });
+
+  // Cmd or Ctrl + Enter runs the main action of the step on screen.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      // The "Change something" box has its own Enter key, so it never posts by accident.
+      if (e.key !== "Enter" || !(e.metaKey || e.ctrlKey) || busy || (e.target as HTMLElement).id === "refine") return;
+      if (stage.name === "describe" && description.trim()) analyze();
+      else if (stage.name === "review" && analysis?.draft.title.trim()) postIssue(stage.regressionOf);
+      else if (stage.name === "comment" && stage.body.trim())
+        post({ action: stage.action, issueNumber: stage.match.number, body: stage.body });
+      else return;
+      e.preventDefault();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   function reset() {
     clearDraft(repo.fullName);
     setDescription("");
@@ -225,8 +258,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
             </p>
           )}
           {errorBox}
-          <BottomBar>
-            <ActionButton onClick={analyze} disabled={!description.trim()} className={primary}>Draft issue</ActionButton>
+          <BottomBar shortcut>
+            <ActionButton onClick={analyze} disabled={!description.trim()} aria-keyshortcuts={SHORTCUT} className={primary}>Draft issue</ActionButton>
           </BottomBar>
         </>
       )}
@@ -320,18 +353,11 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
               {shots.length > 0 && <ScreenshotPicker shots={shots} onChange={setShots} />}
               {privateShotsWarning}
               {errorBox}
-              <BottomBar>
+              <BottomBar shortcut>
                 <button onClick={reset} disabled={!!busy} className={secondary}>Discard</button>
                 <ActionButton
-                  onClick={() =>
-                    post({
-                      action: stage.regressionOf ? "new_regression" : "create",
-                      issueNumber: stage.regressionOf,
-                      title: analysis.draft.title,
-                      body: analysis.draft.body,
-                      labels: analysis.draft.labels,
-                    })
-                  }
+                  onClick={() => postIssue(stage.regressionOf)}
+                  aria-keyshortcuts={SHORTCUT}
                   disabled={!analysis.draft.title.trim()}
                   busy={busy === "post"}
                   busyLabel="Posting…"
@@ -366,10 +392,11 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           {shots.length > 0 && <ScreenshotPicker shots={shots} onChange={setShots} />}
           {privateShotsWarning}
           {errorBox}
-          <BottomBar>
+          <BottomBar shortcut>
             <button onClick={reset} disabled={!!busy} className={secondary}>Discard</button>
             <ActionButton
               onClick={() => post({ action: stage.action, issueNumber: stage.match.number, body: stage.body })}
+              aria-keyshortcuts={SHORTCUT}
               disabled={!stage.body.trim()}
               busy={busy === "post"}
               busyLabel="Posting…"
@@ -510,6 +537,13 @@ function DraftReview({
             maxLength={LIMITS.instruction.max}
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !refining && instruction.trim()) {
+                e.preventDefault();
+                refine();
+              }
+            }}
+            aria-keyshortcuts="Enter"
             placeholder="e.g. add that it only happens on slow network"
             className="glass h-12 min-w-0 flex-1 rounded-full px-5"
           />
