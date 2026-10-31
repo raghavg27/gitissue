@@ -9,6 +9,8 @@ export function SiteFooter() {
   return (
     <nav aria-label="Footer" className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted">
       <Link href="/features" className={link}>Features</Link>
+      <Link href="/privacy" className={link}>Privacy</Link>
+      <Link href="/terms" className={link}>Terms</Link>
       <ExternalLink href={REPO_URL} className={link}>Source code</ExternalLink>
       <ExternalLink href={SUPPORT_URL} className={link}>Support GitIssue</ExternalLink>
     </nav>
