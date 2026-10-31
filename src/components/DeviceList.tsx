@@ -8,10 +8,18 @@ import { DeviceForm } from "./DeviceForm";
 export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
   const [devices, setDevices] = useState(initial);
   const [adding, setAdding] = useState(initial.length === 0);
+  const [error, setError] = useState("");
 
-  async function remove(id: string) {
-    const { error } = await createBrowserSupabase().from("device_profiles").delete().eq("id", id);
-    if (!error) setDevices(devices.filter((d) => d.id !== id));
+  // Removes the row at once; if the server says no, the row comes back in the same place.
+  async function remove(device: DeviceProfile) {
+    setError("");
+    const index = devices.indexOf(device);
+    setDevices((list) => list.filter((d) => d.id !== device.id));
+    const { error } = await createBrowserSupabase().from("device_profiles").delete().eq("id", device.id!);
+    if (error) {
+      setDevices((list) => [...list.slice(0, index), device, ...list.slice(index)]);
+      setError(`Could not delete ${device.device_model}. Check your connection and try again.`);
+    }
   }
 
   return (
@@ -27,11 +35,12 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
                   {d.app_version && `, app ${d.app_version}`}
                 </p>
               </div>
-              <button onClick={() => remove(d.id!)} className="text-sm text-rec">Delete</button>
+              <button onClick={() => remove(d)} className="text-sm text-rec">Delete</button>
             </li>
           ))}
         </ul>
       )}
+      {error && <p role="alert" className="text-sm text-rec">{error}</p>}
       {adding ? (
         <DeviceForm onSaved={(d) => { setDevices([...devices, d]); setAdding(false); }} onCancel={() => setAdding(false)} />
       ) : (
