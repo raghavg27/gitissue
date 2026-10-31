@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
@@ -6,7 +7,19 @@ import { ReportFlow } from "@/components/ReportFlow";
 import { DraftBeforeSignIn } from "@/components/DraftBeforeSignIn";
 import { getViewer } from "@/lib/github/client";
 import { loadRepoAccess } from "@/lib/github/repo";
+import { pageMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
+
+// Repo pages are per-user tools, not content, so they are never indexed.
+export async function generateMetadata({ params }: PageProps<"/[owner]/[repo]/[[...rest]]">): Promise<Metadata> {
+  const { owner, repo } = await params;
+  return pageMetadata({
+    title: `Report a bug in ${owner}/${repo}`,
+    description: `Describe a bug in ${owner}/${repo} and get an issue that fits the repo.`,
+    path: `/${owner}/${repo}`,
+    noindex: true,
+  });
+}
 
 // Both the main report screen and the URL shortcut: /<owner>/<repo>[/anything] (§7.2).
 export default async function RepoPage({ params }: PageProps<"/[owner]/[repo]/[[...rest]]">) {

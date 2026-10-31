@@ -1,11 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
 import { plural } from "@/lib/format";
+import { pageMetadata } from "@/lib/seo";
 import { EmptyState } from "@/components/EmptyState";
 import { getViewer } from "@/lib/github/client";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = pageMetadata({
+  title: "My reports",
+  description: "The issues you created, reopened or commented on with GitIssue.",
+  path: "/reports",
+  noindex: true,
+});
 
 const ACTION_TEXT = { created: "Created", commented: "Commented", reopened: "Reopened" } as const;
 

@@ -1,10 +1,26 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentPage } from "@/components/ContentPage";
+import { JsonLd } from "@/components/JsonLd";
 import { FAQ, FEATURES } from "@/content/features";
+import { breadcrumbLd, faqLd, pageMetadata, webPageLd } from "@/lib/seo";
+import { siteUrl } from "@/lib/site";
+
+const DESCRIPTION = "Each GitIssue feature and the reason for it: dictation, repo templates, real screen names, duplicate checks and more.";
+
+export const metadata: Metadata = pageMetadata({ title: "Features", description: DESCRIPTION, path: "/features" });
 
 export default function Features() {
+  const site = siteUrl();
   return (
     <ContentPage title="Features" intro="Each thing GitIssue does, and the reason it does it.">
+      <JsonLd
+        data={[
+          webPageLd(site, "/features", "Features", DESCRIPTION),
+          breadcrumbLd(site, [{ name: "Home", path: "/" }, { name: "Features", path: "/features" }]),
+          faqLd(FAQ),
+        ]}
+      />
       <ul className="space-y-3">
         {FEATURES.map((f) => (
           <li key={f.name} className="glass space-y-2 rounded-3xl p-5">

@@ -3,13 +3,22 @@ import { Onest } from "next/font/google";
 import { HashFocus } from "@/components/HashFocus";
 import { PageRestore } from "@/components/PageRestore";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { BRAND, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const body = Onest({ variable: "--font-body", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GitIssue",
-  description: "Say the bug out loud. Get an issue that fits the repo.",
+  metadataBase: new URL(siteUrl()),
+  title: { default: BRAND, template: `%s · ${BRAND}` },
+  description: "Say the bug out loud. Get a GitHub issue that fits the repo.",
+  applicationName: BRAND,
+  // Preview deployments are never indexed; robots.txt blocks them too.
+  robots: process.env.VERCEL_ENV === "preview" ? { index: false, follow: false } : undefined,
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION } : undefined,
+  },
 };
 
 export const viewport: Viewport = {

@@ -12,3 +12,8 @@ export function safeNextPath(value: string | null | undefined): string {
   if (/[\\\u0000-\u001f]/.test(value) || /%(0[0-9a-f]|1[0-9a-f]|5c)/i.test(value)) return "/";
   return value;
 }
+
+export const BRAND = "GitIssue";
+export const REPO_URL = "https://github.com/raghavg27/gitissue";
+export const SUPPORT_URL = "https://buymeacoffee.com/raghavg27";
+export const SECURITY_URL = `${REPO_URL}/security/advisories/new`;

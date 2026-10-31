@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
 import { DeviceList } from "@/components/DeviceList";
 import { getViewer } from "@/lib/github/client";
+import { pageMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Devices",
+  description: "The phones and browsers you test on, saved for your reports.",
+  path: "/settings",
+  noindex: true,
+});
 
 export default async function Settings() {
   if (!(await getViewer())) redirect("/");
