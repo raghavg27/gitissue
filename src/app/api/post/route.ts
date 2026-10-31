@@ -1,5 +1,7 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { fail, withRepo } from "@/lib/api";
+import { reportsTag } from "@/lib/data";
 import { duplicateOptions } from "@/lib/duplicates";
 import { attachScreenshots } from "@/lib/issue-body";
 import { createClient } from "@/lib/supabase/server";
@@ -93,6 +95,7 @@ export async function POST(request: NextRequest) {
     title: reportTitle,
   });
   if (error) console.error("post: saving report history failed", error);
+  else revalidateTag(reportsTag(viewer.userId), { expire: 0 });
 
   return NextResponse.json({ url, number, action: recorded, reopenFailed });
 }

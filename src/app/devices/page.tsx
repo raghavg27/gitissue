@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
 import { DeviceList } from "@/components/DeviceList";
+import { getDevices } from "@/lib/data";
 import { getViewer } from "@/lib/github/client";
 import { pageMetadata } from "@/lib/seo";
-import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = pageMetadata({
   title: "Devices",
@@ -15,9 +15,9 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function Devices() {
-  if (!(await getViewer())) redirect("/");
-  const supabase = await createClient();
-  const { data } = await supabase.from("device_profiles").select("*").order("created_at");
+  const viewer = await getViewer();
+  if (!viewer) redirect("/");
+  const devices = await getDevices(viewer.userId);
 
   return (
     <>
@@ -28,7 +28,7 @@ export default async function Devices() {
           <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">Devices</h1>
           <p className="text-muted">Save the phones and browsers you test on, then pick one per report instead of dictating it.</p>
         </div>
-        <DeviceList devices={data ?? []} />
+        <DeviceList devices={devices} />
       </main>
     </>
   );

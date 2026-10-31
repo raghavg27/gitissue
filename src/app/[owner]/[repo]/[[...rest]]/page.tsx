@@ -5,10 +5,10 @@ import { Backdrop } from "@/components/Backdrop";
 import { Hero } from "@/components/Hero";
 import { ReportFlow } from "@/components/ReportFlow";
 import { DraftBeforeSignIn } from "@/components/DraftBeforeSignIn";
+import { getDevices } from "@/lib/data";
 import { getViewer } from "@/lib/github/client";
 import { loadRepoAccess } from "@/lib/github/repo";
 import { pageMetadata } from "@/lib/seo";
-import { createClient } from "@/lib/supabase/server";
 
 // Repo pages are per-user tools, not content, so they are never indexed.
 export async function generateMetadata({ params }: PageProps<"/[owner]/[repo]/[[...rest]]">): Promise<Metadata> {
@@ -42,15 +42,14 @@ export default async function RepoPage({ params }: PageProps<"/[owner]/[repo]/[[
   const access = await loadRepoAccess(viewer.octokit, owner, repo).catch(() => null);
   if (!access) notFound();
 
-  const supabase = await createClient();
-  const { data: devices } = await supabase.from("device_profiles").select("*").order("created_at");
+  const devices = await getDevices(viewer.userId);
 
   return (
     <>
       <Backdrop />
       <AppHeader signedIn />
       <main id="main" tabIndex={-1} className="mx-auto w-full max-w-xl px-5 pt-6">
-        <ReportFlow repo={access} devices={devices ?? []} />
+        <ReportFlow repo={access} devices={devices} />
       </main>
     </>
   );

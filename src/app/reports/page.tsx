@@ -6,10 +6,10 @@ import { Backdrop } from "@/components/Backdrop";
 import { EmptyState } from "@/components/EmptyState";
 import { ExternalLink } from "@/components/ExternalLink";
 import { plural } from "@/lib/format";
-import { pageInfo } from "@/lib/pagination";
+import { PAGE_SIZE, pageInfo } from "@/lib/pagination";
 import { pageMetadata } from "@/lib/seo";
+import { getReports } from "@/lib/data";
 import { getViewer } from "@/lib/github/client";
-import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = pageMetadata({
   title: "My reports",
@@ -23,12 +23,12 @@ const ACTION_TEXT = { created: "Created", commented: "Commented", reopened: "Reo
 const pageLink = "glass inline-flex h-11 items-center rounded-full px-5 font-medium whitespace-nowrap transition-colors hover:border-white/40";
 
 export default async function Reports({ searchParams }: PageProps<"/reports">) {
-  if (!(await getViewer())) redirect("/");
-  const supabase = await createClient();
-  const { count } = await supabase.from("reports").select("id", { count: "exact", head: true });
-  const total = count ?? 0;
-  const { page, pages, from, to } = pageInfo((await searchParams).page, total);
-  const { data: reports } = await supabase.from("reports").select("*").order("created_at", { ascending: false }).range(from, to);
+  const viewer = await getViewer();
+  if (!viewer) redirect("/");
+  // A page past the end shows the last page instead.
+  const first = await getReports(viewer.userId, 0, PAGE_SIZE - 1);
+  const { page, pages, from, to } = pageInfo((await searchParams).page, first.total);
+  const { reports, total } = page === 1 ? first : await getReports(viewer.userId, from, to);
 
   return (
     <>
