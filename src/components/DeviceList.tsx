@@ -4,10 +4,11 @@ import { useState } from "react";
 import { deleteDevice } from "@/lib/devices/actions";
 import type { DeviceProfile } from "@/lib/types";
 import { DeviceForm } from "./DeviceForm";
+import { EmptyState } from "./EmptyState";
 
 export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
   const [devices, setDevices] = useState(initial);
-  const [adding, setAdding] = useState(initial.length === 0);
+  const [adding, setAdding] = useState(false);
   const [error, setError] = useState("");
 
   // Removes the row at once; if the server says no, the row comes back in the same place.
@@ -41,7 +42,13 @@ export function DeviceList({ devices: initial }: { devices: DeviceProfile[] }) {
         </ul>
       )}
       {error && <p role="alert" className="text-sm text-rec">{error}</p>}
-      {adding ? (
+      {devices.length === 0 && !adding ? (
+        <EmptyState
+          drawing="devices"
+          line="Save a phone or browser once, then pick it for each report."
+          action={<button onClick={() => setAdding(true)} className="pill h-12 px-6">Add a device</button>}
+        />
+      ) : adding ? (
         <DeviceForm devices={devices} onSaved={(d) => { setDevices([...devices, d]); setAdding(false); }} onCancel={() => setAdding(false)} />
       ) : (
         <button onClick={() => setAdding(true)} className="h-12 w-full rounded-full border border-dashed border-white/25 px-5 font-medium text-muted transition-colors hover:border-white/50 hover:text-ink">

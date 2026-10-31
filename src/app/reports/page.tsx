@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Backdrop } from "@/components/Backdrop";
+import { EmptyState } from "@/components/EmptyState";
 import { getViewer } from "@/lib/github/client";
 import { createClient } from "@/lib/supabase/server";
 
@@ -19,9 +20,11 @@ export default async function Reports() {
       <main className="mx-auto w-full max-w-xl space-y-6 px-5 pt-6 pb-16">
         <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">My reports</h1>
         {!reports?.length ? (
-          <p className="text-muted">
-            Nothing reported yet. <Link href="/" className="font-medium text-ink underline underline-offset-4">Pick a repo</Link> to file your first bug.
-          </p>
+          <EmptyState
+            drawing="reports"
+            line="You have not reported a bug yet. Your issues and comments show here."
+            action={<Link href="/#repo" className="pill h-12 px-6">Report a bug</Link>}
+          />
         ) : (
           <ul className="glass divide-y divide-line overflow-hidden rounded-3xl">
             {reports.map((r) => (
