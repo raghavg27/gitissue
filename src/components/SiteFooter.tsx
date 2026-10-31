@@ -29,6 +29,7 @@ export function SiteFooter() {
             {SITE_LINKS.map((l) => (
               <li key={l.href}><Link href={l.href} className={link}>{l.label}</Link></li>
             ))}
+            <li><Link href="/demo" className={link}>Demo</Link></li>
           </ul>
         </nav>
         <nav aria-label="Resources">
