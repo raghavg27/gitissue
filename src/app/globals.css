@@ -10,8 +10,8 @@
   --ink: #f7efe8;
   --muted: #cdbfb3;
   --line: rgba(255, 226, 204, 0.16);
-  --pill: #ffffff;
-  --pill-ink: #2f2f33;
+  --pill: #ffb15c;
+  --pill-ink: #2a140a;
   --marker: #ffc46b;
   --rec: #ff6b7d;
   --ok: #5fe3b8;
@@ -60,27 +60,29 @@ body {
 @utility glass {
   border: 1px solid var(--line);
   background-color: var(--card);
+  /* A faint warm glow along the top edge, like light caught on glass. */
+  background-image: linear-gradient(rgba(255, 190, 140, 0.07), transparent 55%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Solid white pill for the one main action on a screen. */
+/* Ember gradient pill for the one main action on a screen. */
 @utility pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--pill);
+  background: linear-gradient(135deg, #ffc46b, #ff7a4d);
   color: var(--pill-ink);
   font-weight: 500;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: background-color 150ms var(--ease-entrance);
+  transition: filter 150ms var(--ease-entrance);
   &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.85);
+    filter: brightness(1.08);
   }
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px rgba(255, 177, 92, 0.8);
   }
   &:disabled {
     opacity: 0.45;

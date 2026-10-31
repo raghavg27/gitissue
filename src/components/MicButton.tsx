@@ -60,7 +60,7 @@ export function MicButton({ onText, size = "lg" }: { onText: (text: string) => v
         aria-pressed={recording}
         aria-label={recording ? "Stop recording" : "Dictate"}
         className={`${dim} flex shrink-0 items-center justify-center rounded-full transition-colors ${
-          recording ? "animate-pulse bg-rec text-paper" : "bg-pill text-pill-ink hover:bg-white/85"
+          recording ? "animate-pulse bg-rec text-paper" : "bg-pill text-pill-ink hover:bg-pill/85"
         }`}
       >
         {recording ? (
