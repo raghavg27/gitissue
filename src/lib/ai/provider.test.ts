@@ -25,6 +25,7 @@ describe("generateJson", () => {
     vi.stubGlobal("fetch", fetchMock);
   });
   afterEach(() => {
+    vi.useRealTimers();
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
     fetchMock.mockReset();
@@ -60,7 +61,6 @@ describe("generateJson", () => {
     await vi.advanceTimersByTimeAsync(10_000);
     await expect(result).resolves.toEqual({ from: "groq" });
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    vi.useRealTimers();
   });
 
   it("does not wait when Groq's wait is too long, and says the AI is busy", async () => {
