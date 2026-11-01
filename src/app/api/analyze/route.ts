@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildAnalyzePrompt, fallbackDraft, parseAnalyzeResponse } from "@/lib/ai/draft";
-import { generateJson } from "@/lib/ai/provider";
+import { explainAiFailure, generateJson } from "@/lib/ai/provider";
 import { fail, limited, loadDevice, withRepo } from "@/lib/api";
 import { gatherContext } from "@/lib/context/gather";
 import { duplicateOptions, searchCandidates } from "@/lib/duplicates";
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     logError("analyze: AI failed", e);
     draft = fallbackDraft(description, ctx.template);
-    aiError = "The AI could not draft this issue, so the draft holds the repo's template and your description. Edit it, then post.";
+    aiError = `${explainAiFailure(e)} For now, the draft holds the repo's template and your description. You can edit it and post, or try the AI again.`;
   }
 
   return NextResponse.json({

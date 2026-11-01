@@ -424,6 +424,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           analysis={analysis}
           regressionOf={stage.regressionOf}
           onDraft={(draft) => setAnalysis({ ...analysis, draft })}
+          onRetry={analyze}
           footer={
             <>
               {shots.length > 0 && <ScreenshotPicker shots={shots} onChange={setShots} />}
@@ -599,12 +600,14 @@ function DraftReview({
   analysis,
   regressionOf,
   onDraft,
+  onRetry,
   footer,
 }: {
   repo: RepoAccess;
   analysis: Analysis;
   regressionOf?: number;
   onDraft: (d: Draft) => void;
+  onRetry: () => void;
   footer: React.ReactNode;
 }) {
   const { draft, missing, aiError } = analysis;
@@ -633,7 +636,14 @@ function DraftReview({
 
   return (
     <>
-      {aiError && <p role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{aiError}</p>}
+      {aiError && (
+        <div role="status" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
+          <p>{aiError}</p>
+          <button onClick={onRetry} className="mt-3 rounded-full border border-current px-4 py-2 font-medium">
+            Try the AI again
+          </button>
+        </div>
+      )}
       {draft.missingFields.length > 0 && (
         <div className="rounded-2xl bg-warn-bg p-4 text-warn-ink">
           <p className="font-medium">
