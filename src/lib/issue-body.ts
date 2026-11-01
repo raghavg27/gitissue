@@ -9,7 +9,7 @@ export function attachScreenshots(body: string, urls: string[]): string {
   return images ? `${body.trimEnd()}\n\n${images}` : body;
 }
 
-// A line at the end of each new issue, so people who read it can find the app.
+// A line at the end of each issue and comment, so people who read it can find the app.
 export function addAttribution(body: string, appUrl: string): string {
   return `${body.trimEnd()}\n\n_Created with [${BRAND}](${appUrl})_`;
 }

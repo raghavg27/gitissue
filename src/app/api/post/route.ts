@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   const { viewer, access } = result;
   const gh = viewer.octokit;
   const base = { owner: access.owner, repo: access.repo };
-  const fullBody = attachScreenshots(body, urls);
+  const fullBody = addAttribution(attachScreenshots(body, urls), siteUrl());
 
   let url: string;
   let number: number;
@@ -56,10 +56,7 @@ export async function POST(request: NextRequest) {
       const { data } = await gh.issues.create({
         ...base,
         title,
-        body: addAttribution(
-          action === "new_regression" ? `Possible regression of #${issueNumber}\n\n${fullBody}` : fullBody,
-          siteUrl(),
-        ),
+        body: action === "new_regression" ? `Possible regression of #${issueNumber}\n\n${fullBody}` : fullBody,
         labels: labels.length ? labels : undefined,
       });
       url = data.html_url;
