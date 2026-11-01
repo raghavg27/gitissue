@@ -4,7 +4,8 @@ import { fail, limited, withRepo } from "@/lib/api";
 import { reportsTag } from "@/lib/data";
 import { publicEnv } from "@/lib/env";
 import { duplicateOptions } from "@/lib/duplicates";
-import { attachScreenshots } from "@/lib/issue-body";
+import { addAttribution, attachScreenshots } from "@/lib/issue-body";
+import { siteUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { MAX_SCREENSHOTS, validateIssue } from "@/lib/validation";
 import { logError } from "@/lib/log";
@@ -55,7 +56,10 @@ export async function POST(request: NextRequest) {
       const { data } = await gh.issues.create({
         ...base,
         title,
-        body: action === "new_regression" ? `Possible regression of #${issueNumber}\n\n${fullBody}` : fullBody,
+        body: addAttribution(
+          action === "new_regression" ? `Possible regression of #${issueNumber}\n\n${fullBody}` : fullBody,
+          siteUrl(),
+        ),
         labels: labels.length ? labels : undefined,
       });
       url = data.html_url;

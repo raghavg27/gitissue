@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { attachScreenshots, SCREENSHOT_MARKER } from "./issue-body";
+import { addAttribution, attachScreenshots, SCREENSHOT_MARKER } from "./issue-body";
 
 describe("attachScreenshots", () => {
   it("replaces the marker", () => {
@@ -13,5 +13,11 @@ describe("attachScreenshots", () => {
   it("strips the marker when there are no screenshots", () => {
     expect(attachScreenshots(`A\n\n${SCREENSHOT_MARKER}`, [])).toBe("A");
     expect(attachScreenshots("A", [])).toBe("A");
+  });
+});
+
+describe("addAttribution", () => {
+  it("adds a line with a link to the app at the end", () => {
+    expect(addAttribution("Body\n\n", "https://gitissue.app")).toBe("Body\n\n_Created with [GitIssue](https://gitissue.app)_");
   });
 });
