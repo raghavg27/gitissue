@@ -4,7 +4,7 @@ import { ExternalLink } from "@/components/ExternalLink";
 import { JsonLd } from "@/components/JsonLd";
 import { UPGRADES } from "@/content/support";
 import { breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
-import { siteUrl, SUPPORT_URL } from "@/lib/site";
+import { siteUrl, SPONSORS_URL, SUPPORT_URL } from "@/lib/site";
 
 const DESCRIPTION = "GitIssue runs on the free plan of each service it uses. See each limit, and what your support changes.";
 
@@ -29,7 +29,10 @@ export default function Support() {
           each one has limits, and you can feel some of them when many testers report at the same time.
         </p>
         <p className="text-muted">Below is each limit, and what changes when it moves to a paid plan. The list is in order: the first items fix what testers notice most.</p>
-        <ExternalLink href={SUPPORT_URL} className="pill h-12 px-6">Buy me a coffee</ExternalLink>
+        <div className="flex flex-wrap gap-3">
+          <ExternalLink href={SUPPORT_URL} className="pill h-12 px-6">Buy me a coffee</ExternalLink>
+          <ExternalLink href={SPONSORS_URL} className="glass inline-flex h-12 items-center rounded-full px-6 font-medium transition-colors hover:border-white/40">Sponsor on GitHub</ExternalLink>
+        </div>
       </div>
       <ol className="space-y-3">
         {UPGRADES.map((u, i) => (
@@ -52,9 +55,12 @@ export default function Support() {
       <div className="glass space-y-4 rounded-3xl p-6">
         <h2 className="text-2xl font-medium tracking-tight">If GitIssue saves your team time, help it grow</h2>
         <p className="text-muted">
-          Each coffee goes to the upgrades above, in that order. GitIssue is open source under the MIT license, so each upgrade helps every maintainer who uses it.
+          Each coffee or sponsorship goes to the upgrades above, in that order. GitIssue is open source under the MIT license, so each upgrade helps every maintainer who uses it.
         </p>
-        <ExternalLink href={SUPPORT_URL} className="pill h-12 px-6">Buy me a coffee</ExternalLink>
+        <div className="flex flex-wrap gap-3">
+          <ExternalLink href={SUPPORT_URL} className="pill h-12 px-6">Buy me a coffee</ExternalLink>
+          <ExternalLink href={SPONSORS_URL} className="glass inline-flex h-12 items-center rounded-full px-6 font-medium transition-colors hover:border-white/40">Sponsor on GitHub</ExternalLink>
+        </div>
       </div>
     </ContentPage>
   );

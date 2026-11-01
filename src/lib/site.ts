@@ -19,4 +19,5 @@ export const BRAND = "GitIssue";
 export const DEVICE_COOKIE = "gi_device";
 export const REPO_URL = "https://github.com/raghavg27/gitissue";
 export const SUPPORT_URL = "https://buymeacoffee.com/raghavg27";
+export const SPONSORS_URL = "https://github.com/sponsors/raghavg27";
 export const SECURITY_URL = `${REPO_URL}/security/advisories/new`;

@@ -51,7 +51,7 @@ export default function Privacy() {
             <tr><td>Vercel</td><td>Requests to the site, and cookieless page views and speed numbers</td><td>Hosting, Web Analytics and Speed Insights</td></tr>
           </tbody>
         </table>
-        <p>The Buy me a coffee button on the Support GitIssue page opens Buy Me a Coffee. That service receives data only if you choose to go there.</p>
+        <p>The buttons on the Support GitIssue page open Buy Me a Coffee and GitHub Sponsors. These services receive data only if you choose to go there.</p>
 
         <h2>Your choices</h2>
         <ul>
