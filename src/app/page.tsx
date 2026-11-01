@@ -3,8 +3,6 @@ import { Hero } from "@/components/Hero";
 import { HomeSections } from "@/components/HomeSections";
 import { JsonLd } from "@/components/JsonLd";
 import { RepoPicker } from "@/components/RepoPicker";
-import { getIssuesCreated } from "@/lib/data";
-import { plural } from "@/lib/format";
 import { getViewer } from "@/lib/github/client";
 import { REPO_URL_ERROR } from "@/lib/repo-url";
 import { organizationLd, pageMetadata, webAppLd, websiteLd } from "@/lib/seo";
@@ -21,7 +19,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function Home({ searchParams }: PageProps<"/">) {
-  const [viewer, issuesCreated] = await Promise.all([getViewer(), getIssuesCreated()]);
+  const viewer = await getViewer();
   const { error } = await searchParams;
 
   const site = siteUrl();
@@ -38,9 +36,6 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       )}
       <JsonLd data={[websiteLd(site, DESCRIPTION), organizationLd(site), webAppLd(site, DESCRIPTION)]} />
       <RepoPicker initialError={error === "repo" ? REPO_URL_ERROR : ""} />
-      {issuesCreated !== null && (
-        <p className="mt-6 text-sm text-muted">{plural(issuesCreated, "issue")} created with GitIssue</p>
-      )}
       {!viewer && (
         <p className="mt-6 text-sm text-muted">No account is needed to start. You sign in with GitHub when you are ready to draft.</p>
       )}

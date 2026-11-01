@@ -4,8 +4,10 @@ import type { Metadata, Viewport } from "next";
 import { connection } from "next/server";
 import { Space_Grotesk } from "next/font/google";
 import { HashFocus } from "@/components/HashFocus";
+import { IssueCountProvider } from "@/components/IssueCount";
 import { PageRestore } from "@/components/PageRestore";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { getIssuesCreated } from "@/lib/data";
 import { BRAND, siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -35,6 +37,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Each page is rendered per request, so its scripts carry that request's CSP nonce.
   await connection();
+  const issuesCreated = await getIssuesCreated();
   return (
     <html lang="en" className={`${body.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
@@ -47,7 +50,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <SmoothScroll />
         <PageRestore />
         <HashFocus />
-        {children}
+        <IssueCountProvider count={issuesCreated}>{children}</IssueCountProvider>
         {/* Cookieless, and served from this site's own /_vercel path, so no cookie banner is needed. */}
         <Analytics />
         <SpeedInsights />

@@ -3,6 +3,7 @@ import { SITE_LINKS } from "@/content/pages";
 import { REPO_URL } from "@/lib/site";
 import { BottomNav } from "./BottomNav";
 import { ExternalLink } from "./ExternalLink";
+import { IssueCountChip } from "./IssueCount";
 import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 import { SignOutButton } from "./SignOutButton";
@@ -13,13 +14,16 @@ const link = "transition-colors duration-150 hover:text-ink aria-[current=page]:
 export function AppHeader({ signedIn, reveal = false }: { signedIn: boolean; reveal?: boolean }) {
   return (
     <header
-      className={`relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-3 sm:px-10 sm:pt-7 ${reveal ? "reveal" : ""}`}
+      className={`relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-5 sm:gap-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-3 sm:px-10 sm:pt-7 ${reveal ? "reveal" : ""}`}
       style={reveal ? ({ "--delay": "150ms", "--rise": "-0.75rem" } as React.CSSProperties) : undefined}
     >
-      <Link href="/" className="flex items-center gap-2.5 text-lg font-medium tracking-tight text-white sm:text-[1.375rem]">
-        <Logo />
-        GitIssue
-      </Link>
+      <div className="flex items-center gap-2.5 sm:gap-4">
+        <Link href="/" className="flex items-center gap-2.5 text-lg font-medium tracking-tight text-white sm:text-[1.375rem]">
+          <Logo />
+          GitIssue
+        </Link>
+        <IssueCountChip />
+      </div>
       {signedIn ? (
         <>
           <nav aria-label="Main" className="glass hidden h-12 items-center gap-7 rounded-full px-7 text-[0.95rem] whitespace-nowrap text-muted sm:flex">
@@ -44,8 +48,9 @@ export function AppHeader({ signedIn, reveal = false }: { signedIn: boolean; rev
               </svg>
             </ExternalLink>
           </nav>
-          <Link href="/#repo" className="pill h-10 px-4 text-[0.95rem] whitespace-nowrap sm:h-12 sm:px-6">
-            Report a bug
+          <Link href="/#repo" className="pill h-10 px-3 text-[0.95rem] whitespace-nowrap sm:h-12 sm:px-6">
+            {/* Short on phones to make room for the issue count chip. */}
+            Report<span className="sr-only sm:not-sr-only">&nbsp;a bug</span>
           </Link>
           <SiteMenu />
         </div>
