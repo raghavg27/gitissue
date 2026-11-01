@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({ title: "Privacy policy", descri
 export default function Privacy() {
   const site = siteUrl();
   return (
-    <ContentPage title="Privacy policy" intro="Last changed on 31 October 2026.">
+    <ContentPage title="Privacy policy" intro="Last changed on 1 November 2026.">
       <JsonLd
         data={[
           webPageLd(site, "/privacy", "Privacy policy", DESCRIPTION),
@@ -51,7 +51,7 @@ export default function Privacy() {
             <tr><td>Vercel</td><td>Requests to the site, and cookieless page views and speed numbers</td><td>Hosting, Web Analytics and Speed Insights</td></tr>
           </tbody>
         </table>
-        <p>The Support GitIssue link opens Buy Me a Coffee. That service receives data only if you choose to go there.</p>
+        <p>The Buy me a coffee button on the Support GitIssue page opens Buy Me a Coffee. That service receives data only if you choose to go there.</p>
 
         <h2>Your choices</h2>
         <ul>

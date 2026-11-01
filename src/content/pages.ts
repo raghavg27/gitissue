@@ -4,7 +4,8 @@ export const PUBLIC_PAGES = [
   { path: "/features", name: "Features", description: "Each GitIssue feature and the reason for it.", updated: "2026-10-31" },
   { path: "/how-it-works", name: "How it works", description: "The three steps from a bug to a GitHub issue, and how GitIssue compares with writing it by hand.", updated: "2026-10-31" },
   { path: "/faq", name: "FAQ", description: "Answers about what GitIssue posts, the AI it uses, private repos and the data it keeps.", updated: "2026-10-31" },
-  { path: "/privacy", name: "Privacy policy", description: "What data GitIssue keeps, and each outside service that receives it.", updated: "2026-10-31" },
+  { path: "/support", name: "Support GitIssue", description: "The free plan limits of GitIssue, and what support changes.", updated: "2026-11-01" },
+  { path: "/privacy", name: "Privacy policy", description: "What data GitIssue keeps, and each outside service that receives it.", updated: "2026-11-01" },
   { path: "/terms", name: "Terms of use", description: "The rules for using GitIssue.", updated: "2026-10-31" },
 ] as const;
 

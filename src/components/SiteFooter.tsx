@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SITE_LINKS } from "@/content/pages";
-import { REPO_URL, SUPPORT_URL } from "@/lib/site";
+import { REPO_URL } from "@/lib/site";
 import { ExternalLink } from "./ExternalLink";
 import { Logo } from "./Logo";
 
@@ -37,7 +37,7 @@ export function SiteFooter() {
           <ul className="space-y-2">
             <li><ExternalLink href={REPO_URL} className={link}>Source code</ExternalLink></li>
             <li><Link href={SELF} className={link}>Report a GitIssue bug</Link></li>
-            <li><ExternalLink href={SUPPORT_URL} className={link}>Support GitIssue</ExternalLink></li>
+            <li><Link href="/support" className={link}>Support GitIssue</Link></li>
           </ul>
         </nav>
         <nav aria-label="Legal">

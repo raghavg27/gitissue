@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const PUBLIC_PAGES = [
   { path: "/", heading: "Say the bug out loud" },
   { path: "/features", heading: "Features" },
+  { path: "/support", heading: "Support GitIssue" },
   { path: "/privacy", heading: "Privacy" },
   { path: "/terms", heading: "Terms" },
 ];
