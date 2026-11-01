@@ -1,7 +1,7 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { fail, limited, withRepo } from "@/lib/api";
-import { reportsTag } from "@/lib/data";
+import { issuesCreatedTag, reportsTag } from "@/lib/data";
 import { publicEnv } from "@/lib/env";
 import { duplicateOptions } from "@/lib/duplicates";
 import { addAttribution, attachScreenshots } from "@/lib/issue-body";
@@ -100,7 +100,10 @@ export async function POST(request: NextRequest) {
     title: reportTitle,
   });
   if (error) logError("post: saving report history failed", error);
-  else revalidateTag(reportsTag(viewer.userId), { expire: 0 });
+  else {
+    revalidateTag(reportsTag(viewer.userId), { expire: 0 });
+    if (recorded === "created") revalidateTag(issuesCreatedTag, { expire: 0 });
+  }
 
   // For the success screen: how many reports this tester has sent. Left out if the count fails.
   const { count } = await supabase.from("reports").select("id", { count: "exact", head: true }).eq("user_id", viewer.userId);

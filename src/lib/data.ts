@@ -6,6 +6,8 @@ import type { DeviceProfile } from "@/lib/types";
 // Per-user cache tags. A write clears the tag, so the next read is fresh.
 export const devicesTag = (userId: string) => `devices:${userId}`;
 export const reportsTag = (userId: string) => `reports:${userId}`;
+// Site-wide: cleared each time GitIssue opens a new issue.
+export const issuesCreatedTag = "issues-created";
 
 export type Report = {
   id: string;
@@ -48,4 +50,25 @@ export function getReports(userId: string, from: number, to: number): Promise<{ 
     ["reports", userId, String(from), String(to)],
     { tags: [reportsTag(userId)], revalidate: 3600 },
   )();
+}
+
+// How many new issues GitIssue has opened, for the home page (issue #11). Null when it cannot be read.
+export async function getIssuesCreated(): Promise<number | null> {
+  try {
+    return await unstable_cache(
+      async () => {
+        const { count, error } = await createAdminClient()
+          .from("reports")
+          .select("id", { count: "exact", head: true })
+          .eq("action", "created");
+        // Thrown, not returned, so a failed read is not cached.
+        if (error) throw error;
+        return count ?? 0;
+      },
+      ["issues-created"],
+      { tags: [issuesCreatedTag], revalidate: 3600 },
+    )();
+  } catch {
+    return null;
+  }
 }
