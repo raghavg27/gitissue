@@ -230,8 +230,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   // Cmd or Ctrl + Enter runs the main action of the step on screen.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      // The "Change something" box has its own Enter key, so it never posts by accident.
-      if (e.key !== "Enter" || !(e.metaKey || e.ctrlKey) || busy || (e.target as HTMLElement).id === "refine") return;
+      // The "Change something" box has its own Enter key, so it never posts by accident. The discard box blocks it too.
+      if (e.key !== "Enter" || !(e.metaKey || e.ctrlKey) || busy || confirmDiscard || (e.target as HTMLElement).id === "refine") return;
       if (stage.name === "describe" && description.trim()) analyze();
       else if (stage.name === "review" && analysis?.draft.title.trim()) postIssue(stage.regressionOf);
       else if (stage.name === "comment" && stage.body.trim())
