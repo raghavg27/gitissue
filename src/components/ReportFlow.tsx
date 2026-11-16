@@ -698,6 +698,7 @@ function DraftReview({
           id="title"
           maxLength={LIMITS.title.max}
           value={draft.title}
+          readOnly={refining}
           onChange={(e) => onDraft({ ...draft, title: e.target.value })}
           className="glass h-14 w-full rounded-full px-5 text-lg font-medium"
         />
@@ -708,6 +709,7 @@ function DraftReview({
           id="body"
           maxLength={LIMITS.body.max}
           value={draft.body}
+          readOnly={refining}
           onChange={(e) => onDraft({ ...draft, body: e.target.value })}
           rows={16}
           className="glass w-full rounded-3xl px-5 py-4 leading-relaxed"
@@ -721,6 +723,7 @@ function DraftReview({
               key={l}
               onClick={() => onDraft({ ...draft, labels: draft.labels.filter((x) => x !== l) })}
               aria-label={`Remove label ${l}`}
+              disabled={refining}
               className="glass max-w-full truncate rounded-full px-3 py-1 transition-colors hover:border-white/40"
             >
               {l} ×
