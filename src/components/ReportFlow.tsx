@@ -32,7 +32,8 @@ type Stage =
   | { name: "posted"; url: string; number: number; action: string; reopenFailed: boolean; reportCount?: number; title: string; seconds?: number };
 
 // What is kept on the device between visits. A draft that was still analyzing goes back to the describe step.
-type SavedDraft = { description: string; shots: Shot[]; deviceId: string; analysis: Analysis | null; stage: Stage };
+// "posting" marks a draft whose post was still running, because that post can reach GitHub after the page is gone.
+type SavedDraft = { description: string; shots: Shot[]; deviceId: string; analysis: Analysis | null; stage: Stage; posting: boolean };
 
 const ANALYZE_STEPS = [
   "Reading issue templates and contributing rules",
@@ -145,6 +146,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
       setAnalysis(saved.analysis);
       if (saved.stage && ["duplicates", "choose", "review", "comment"].includes(saved.stage.name)) setStage(saved.stage);
     }
+    if (saved.posting) setError("The page closed while this was posting, so it can already be on GitHub. Check your reports before you post it again.");
     setRestored(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [repo.fullName]);
@@ -153,8 +155,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     if (!restored) return;
     if (stage.name === "posted") return clearDraft(repo.fullName);
     const kept = stage.name === "analyzing" ? { name: "describe" as const } : stage;
-    saveDraft(repo.fullName, { description, shots, deviceId, analysis, stage: kept } satisfies SavedDraft);
-  }, [restored, repo.fullName, description, shots, deviceId, analysis, stage]);
+    saveDraft(repo.fullName, { description, shots, deviceId, analysis, stage: kept, posting: busy === "post" } satisfies SavedDraft);
+  }, [restored, repo.fullName, description, shots, deviceId, analysis, stage, busy]);
 
   useEffect(() => {
     if (stage.name !== "analyzing") return;
