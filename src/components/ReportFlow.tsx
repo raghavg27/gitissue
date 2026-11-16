@@ -162,16 +162,18 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
   const repoArgs = { owner: repo.owner, repo: repo.repo };
 
   async function analyze() {
+    // A retry from the review screen comes back to it, with its regression link. A failed retry keeps the old draft.
+    const from = stage;
     setError("");
     setStep(0);
     setStage({ name: "analyzing" });
     try {
       const result = await api<Analysis>("/api/analyze", { ...repoArgs, description, deviceId });
       setAnalysis(result);
-      setStage(result.duplicates.length ? { name: "duplicates" } : { name: "review" });
+      setStage(from.name === "review" ? from : result.duplicates.length ? { name: "duplicates" } : { name: "review" });
     } catch (e) {
       setError((e as Error).message);
-      setStage({ name: "describe" });
+      setStage(from);
     }
   }
 
