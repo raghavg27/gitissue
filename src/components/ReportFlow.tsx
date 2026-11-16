@@ -31,7 +31,7 @@ type Stage =
   | { name: "posted"; url: string; number: number; action: string; reopenFailed: boolean; reportCount?: number; title: string; seconds?: number };
 
 // What is kept on the device between visits. A draft that was still analyzing goes back to the describe step.
-type SavedDraft = { description: string; shots: Shot[]; analysis: Analysis | null; stage: Stage };
+type SavedDraft = { description: string; shots: Shot[]; deviceId: string; analysis: Analysis | null; stage: Stage };
 
 const ANALYZE_STEPS = [
   "Reading issue templates and contributing rules",
@@ -138,6 +138,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     /* eslint-disable react-hooks/set-state-in-effect -- one-time read of device storage after hydration */
     if (typeof saved.description === "string") setDescription(saved.description);
     if (Array.isArray(saved.shots)) setShots(saved.shots);
+    // The device picker is on the describe screen only, so the later screens get the device from the draft.
+    if (typeof saved.deviceId === "string") setDeviceId(saved.deviceId);
     if (saved.analysis) {
       setAnalysis(saved.analysis);
       if (saved.stage && ["duplicates", "choose", "review", "comment"].includes(saved.stage.name)) setStage(saved.stage);
@@ -150,8 +152,8 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     if (!restored) return;
     if (stage.name === "posted") return clearDraft(repo.fullName);
     const kept = stage.name === "analyzing" ? { name: "describe" as const } : stage;
-    saveDraft(repo.fullName, { description, shots, analysis, stage: kept } satisfies SavedDraft);
-  }, [restored, repo.fullName, description, shots, analysis, stage]);
+    saveDraft(repo.fullName, { description, shots, deviceId, analysis, stage: kept } satisfies SavedDraft);
+  }, [restored, repo.fullName, description, shots, deviceId, analysis, stage]);
 
   useEffect(() => {
     if (stage.name !== "analyzing") return;
