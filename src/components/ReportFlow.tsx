@@ -197,8 +197,14 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     }
   }
 
+  // A move the tester picks. An error from the screen they leave does not follow them.
+  function go(next: Stage) {
+    setError("");
+    setStage(next);
+  }
+
   function sameBug(match: Match) {
-    if (match.options.includes("new_regression")) return setStage({ name: "choose", match });
+    if (match.options.includes("new_regression")) return go({ name: "choose", match });
     openComment(match, match.options.includes("reopen_comment") ? "reopen_comment" : "comment");
   }
 
@@ -387,7 +393,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           </ul>
           {errorBox}
           <BottomBar>
-            <button onClick={() => setStage({ name: "review" })} disabled={!!busy} className={primary}>
+            <button onClick={() => go({ name: "review" })} disabled={!!busy} className={primary}>
               It is a different bug
             </button>
           </BottomBar>
@@ -413,7 +419,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
               </span>
               <span className="text-sm text-muted">Maintainers watching it get notified.</span>
             </button>
-            <button onClick={() => setStage({ name: "review", regressionOf: stage.match.number })} disabled={!!busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
+            <button onClick={() => go({ name: "review", regressionOf: stage.match.number })} disabled={!!busy} className="glass w-full rounded-3xl p-5 text-left transition-colors hover:border-white/40 disabled:opacity-50">
               <span className="block font-medium">New issue as a possible regression</span>
               <span className="text-sm text-muted">Opens a fresh issue that links back to #{stage.match.number}.</span>
             </button>
