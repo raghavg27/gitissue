@@ -7,6 +7,7 @@ import type { RepoAccess } from "@/lib/github/repo";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/drafts";
 import { plural } from "@/lib/format";
 import { rememberRepo } from "@/lib/recent-repos";
+import { backTarget } from "@/lib/report-stage";
 import { LIMITS } from "@/lib/validation";
 import type { DeviceProfile, Draft, DuplicateMatch } from "@/lib/types";
 import { ActionButton } from "./ActionButton";
@@ -263,6 +264,7 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
     setStage({ name: "describe" });
   }
 
+  const back = backTarget(stage.name, !!analysis?.duplicates.length);
   const errorBox = error && <p role="alert" className="rounded-2xl bg-warn-bg p-4 text-warn-ink">{error}</p>;
   const privateShotsWarning = repo.private && shots.length > 0 && (
     <p className="text-sm text-muted">
@@ -289,6 +291,15 @@ export function ReportFlow({ repo, devices }: { repo: RepoAccess; devices: Devic
           {repo.private ? "Private" : "Public"}
         </span>
       </div>
+      {back && (
+        <button
+          onClick={() => go({ name: back })}
+          disabled={!!busy}
+          className="text-sm text-muted underline underline-offset-4 transition-colors hover:text-ink disabled:opacity-50"
+        >
+          {back === "describe" ? "Edit the description" : "Back to the matches"}
+        </button>
+      )}
 
       {stage.name === "describe" && (
         <>
